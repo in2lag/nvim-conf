@@ -1,6 +1,9 @@
 local M = {}
 
 function M.setup()
+  vim.opt.infercase = true
+  vim.opt.pumheight = 10
+
   require('blink.cmp').setup({
     keymap = {
       preset = 'default',

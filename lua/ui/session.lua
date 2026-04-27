@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup()
-  vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
+  vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal'
 
   require('auto-session').setup({
     auto_save = true,

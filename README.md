@@ -14,6 +14,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   ├── core/
 │   │   ├── keymaps.lua      Leader, clipboard, editing, smart Home
 │   │   ├── lsp.lua          LSP server config (vtsls)
+│   │   ├── options.lua      Global opts (indent=2, termguicolors, listchars)
 │   │   └── treesitter.lua   tree-sitter-manager + parser list
 │   ├── ui/
 │   │   ├── completion.lua   blink.cmp (LSP, buffer, path, snippets)
@@ -114,9 +115,22 @@ Float window over the current buffer with the requested LSP info.
 | `<leader>gd` | Toggle Diffview (open / close)               |
 | `q` (in Diffview) | Close Diffview                          |
 
+## Editor Defaults
+
+Set in `lua/core/options.lua`:
+
+- 2-space indentation (`tabstop`/`shiftwidth`/`softtabstop` = 2, `expandtab`).
+- `termguicolors` for true-color UI.
+- Gentle whitespace visualization via `list` + `listchars`:
+  `›` for tabs, `·` for leading and trailing spaces, `␣` for non-breaking space.
+- Domain-specific opts (search case, completion popup, line numbers,
+  diff scroll sync) live next to the feature they belong to under `lua/ui/`.
+
 ## Sessions
 
 `auto-session` saves on `:qa` per `cwd` and restores on entry when launched
-without arguments. The previous active buffer, splits, and cursor positions
-come back. The tree closes before save so the layout doesn't carry a stale
-tree window. Suppressed for `~/`, `~/Downloads`, `~/Desktop`, and `/`.
+without arguments. The previous active buffer list, splits, and cursor
+positions come back; buffer-local options are *not* saved (so global
+settings like indent width always win). The tree closes before save so the
+layout doesn't carry a stale tree window. Suppressed for `~/`,
+`~/Downloads`, `~/Desktop`, and `/`.

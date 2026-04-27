@@ -27,7 +27,6 @@ end
 function M.setup()
   vim.opt.number = true
   vim.opt.relativenumber = true
-  vim.opt.termguicolors = true
 
   -- Tell Neovim to use our Lua function to render the gutter
   -- This is the most efficient and error-proof way in v0.12
