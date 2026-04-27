@@ -28,6 +28,8 @@ function M.setup()
           vim.opt_local.cursorline = true
           vim.opt_local.relativenumber = false
         end
+        vim.keymap.set('n', 'q', '<cmd>DiffviewClose<CR>',
+          { buffer = true, nowait = true, desc = "Close Diffview" })
       end,
       view_opened = function()
         vim.schedule(function()
@@ -72,6 +74,14 @@ function M.setup()
   end
 
   vim.keymap.set('n', '<leader>gd', toggle_diffview, { desc = "Toggle Diffview" })
+
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'DiffviewFiles', 'DiffviewFileHistory' },
+    callback = function(args)
+      vim.keymap.set('n', 'q', '<cmd>DiffviewClose<CR>',
+        { buffer = args.buf, nowait = true, desc = "Close Diffview" })
+    end,
+  })
 end
 
 M.setup()
