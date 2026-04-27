@@ -11,19 +11,15 @@ vim.pack.add({
   { src = 'https://github.com/nvim-telescope/telescope.nvim' },
   { src = 'https://github.com/lewis6991/gitsigns.nvim'},
   { src = 'https://github.com/sindrets/diffview.nvim'},
-  { src = 'https://github.com/akinsho/toggleterm.nvim'},
 })
 
 if vim.loader then vim.loader.enable() end
 
 require('core.keymaps')
-require('ui.terminal')
 require('ui.git')
 require('ui.search')
-require('ui.terminal')
 require('ui.tree')
 require('ui.numbers')
-require('ui.git')
 require("gruvbox").setup()
 vim.cmd.colorscheme("gruvbox")
 
