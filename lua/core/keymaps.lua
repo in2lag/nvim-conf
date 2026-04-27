@@ -1,8 +1,12 @@
 local map = vim.keymap.set
 
--- [ The "Double Space" & Project Search ]
+-- [ Find ]
 map('n', '<leader><leader>', '<cmd>Telescope find_files<CR>', { desc = "Fuzzy find files" })
 map('n', '<leader>p', '<cmd>Telescope find_files<CR>', { desc = "Project Search" })
+map('n', '<leader>ff', '<cmd>Telescope find_files<CR>', { desc = "Find files" })
+map('n', '<leader>fg', '<cmd>Telescope live_grep<CR>', { desc = "Find in files (grep)" })
+map('n', '<leader>fb', '<cmd>Telescope buffers<CR>', { desc = "Find buffer" })
+map('n', '<leader>fr', '<cmd>Telescope oldfiles<CR>', { desc = "Recent files" })
 
 -- [ General ]
 map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = "Clear highlights" })

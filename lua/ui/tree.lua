@@ -49,14 +49,17 @@ function M.setup()
   end
   vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 
-  -- 5. AUTO-QUIT
+  -- 5. AUTO-QUIT when only the tree is left (skip if any buffer is unsaved)
   vim.api.nvim_create_autocmd("BufEnter", {
     group = vim.api.nvim_create_augroup("nvim_tree_close", { clear = true }),
     callback = function()
       local wins = vim.api.nvim_list_wins()
-      if #wins == 1 and vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(wins[1])):match("NvimTree_") then
-        vim.cmd "quit"
+      if #wins ~= 1 then return end
+      if not vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(wins[1])):match("NvimTree_") then return end
+      for _, b in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(b) and vim.bo[b].modified then return end
       end
+      vim.cmd("qa")
     end
   })
 end
