@@ -13,17 +13,11 @@ and `lua/ui`.
 ├── lua/
 │   ├── core/
 │   │   └── keymaps.lua      Leader, clipboard, editing, smart Home
-│   └── ui/
-│       ├── git.lua          gitsigns + diffview
-│       ├── numbers.lua      Hybrid line numbers + custom statuscolumn
-│       ├── search.lua       Search behavior + replace shortcut
-│       └── tree.lua         nvim-tree with smart toggle
-└── docs/
-    ├── keymaps.md           Full keybinding reference
-    ├── plugins.md           Plugin catalog
-    ├── modules.md           Per-module deep dive
-    ├── completion.md        Autocompletion behavior
-    └── lsp.md               LSP configuration
+    └── ui/
+        ├── git.lua          gitsigns + diffview (tuned theme, scroll sync)
+        ├── numbers.lua      Hybrid line numbers + custom statuscolumn
+        ├── search.lua       Search behavior + replace shortcut
+        └── tree.lua         nvim-tree with smart toggle
 ```
 
 ## Quick Start
@@ -50,10 +44,10 @@ and `lua/ui`.
 | Tree-sitter       | `tree-sitter-manager.nvim`               |
 | Completion        | Built-in `vim.opt.autocomplete` (no cmp) |
 
-## Documentation
+## Git Keymaps
 
-- [Keymaps](docs/keymaps.md) — every binding, grouped by purpose
-- [Plugins](docs/plugins.md) — what each plugin does and where it's configured
-- [Modules](docs/modules.md) — file-by-file walkthrough of `lua/`
-- [Completion](docs/completion.md) — built-in autocomplete behavior
-- [LSP](docs/lsp.md) — language server setup
+| Key          | Action                                   |
+| ------------ | ---------------------------------------- |
+| `]c` / `[c`  | Next / previous hunk (gitsigns)          |
+| `<leader>gp` | Inline preview of the current hunk       |
+| `<leader>gd` | Toggle Diffview (open / close)           |
