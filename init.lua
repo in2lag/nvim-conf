@@ -16,6 +16,7 @@ vim.pack.add({
   { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('1.*') },
   { src = 'https://github.com/zbirenbaum/copilot.lua' },
   { src = 'https://github.com/rmagatti/auto-session' },
+  { src = 'https://github.com/rmagatti/goto-preview' },
 })
 
 if vim.loader then vim.loader.enable() end
@@ -29,6 +30,7 @@ require('ui.numbers')
 require('ui.whichkey')
 require('ui.format')
 require('ui.completion')
+require('ui.peek')
 require('ai.copilot')
 require("gruvbox").setup()
 vim.cmd.colorscheme("gruvbox")

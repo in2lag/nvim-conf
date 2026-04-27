@@ -34,6 +34,11 @@ function M.setup()
       view_opened = function()
         vim.schedule(function()
           vim.cmd("wincmd l")
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+            local buf = vim.api.nvim_win_get_buf(win)
+            pcall(vim.keymap.set, 'n', 'q', '<cmd>DiffviewClose<CR>',
+              { buffer = buf, nowait = true, desc = "Close Diffview" })
+          end
         end)
       end,
     },
