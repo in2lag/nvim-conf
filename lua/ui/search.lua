@@ -11,6 +11,18 @@ function M.setup()
   map('n', 'N', 'Nzzzv', { desc = "Prev result (centered)" })
   -- Quick Search and Replace
   map('n', '<leader>sr', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search and Replace" })
+
+  local actions = require('telescope.actions')
+  require('telescope').setup({
+    pickers = {
+      buffers = {
+        mappings = {
+          i = { ['<C-d>'] = actions.delete_buffer },
+          n = { ['dd']    = actions.delete_buffer },
+        },
+      },
+    },
+  })
 end
 M.setup()
 return M

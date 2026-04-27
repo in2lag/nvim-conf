@@ -89,6 +89,20 @@ Float window over the current buffer with the requested LSP info.
 | `q` / `<Esc>` (in float) | Close the peek                     |
 | `<CR>` (in float)        | Promote peek to full buffer         |
 
+## Find / Search Keymaps (Telescope)
+
+| Key                  | Action                                       |
+| -------------------- | -------------------------------------------- |
+| `<leader><leader>`   | Find files                                   |
+| `<leader>ff`         | Find files                                   |
+| `<leader>p`          | Project text search (live grep)              |
+| `<leader>fg`         | Live grep                                    |
+| `<leader>b`          | Find buffer                                  |
+| `<leader>fb`         | Find buffer                                  |
+| `<leader>fr`         | Recent files                                 |
+| `<leader>sr`         | Search & replace word under cursor (in file) |
+| `<C-d>` / `dd` in buffers picker | Delete the highlighted buffer    |
+
 ## Git Keymaps
 
 | Key          | Action                                       |
