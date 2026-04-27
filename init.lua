@@ -15,6 +15,7 @@ vim.pack.add({
   { src = 'https://github.com/stevearc/conform.nvim'},
   { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('1.*') },
   { src = 'https://github.com/zbirenbaum/copilot.lua' },
+  { src = 'https://github.com/rmagatti/auto-session' },
 })
 
 if vim.loader then vim.loader.enable() end
@@ -22,6 +23,7 @@ if vim.loader then vim.loader.enable() end
 require('core.keymaps')
 require('ui.git')
 require('ui.search')
+require('ui.session')
 require('ui.tree')
 require('ui.numbers')
 require('ui.whichkey')
