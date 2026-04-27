@@ -12,7 +12,9 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 ├── nvim-pack-lock.json      vim.pack lockfile (pinned plugin revisions)
 ├── lua/
 │   ├── core/
-│   │   └── keymaps.lua      Leader, clipboard, editing, smart Home
+│   │   ├── keymaps.lua      Leader, clipboard, editing, smart Home
+│   │   ├── lsp.lua          LSP server config (vtsls)
+│   │   └── treesitter.lua   tree-sitter-manager + parser list
 │   ├── ui/
 │   │   ├── completion.lua   blink.cmp (LSP, buffer, path, snippets)
 │   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)

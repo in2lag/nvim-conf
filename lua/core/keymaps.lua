@@ -11,6 +11,7 @@ map('n', '<leader>fr', '<cmd>Telescope oldfiles<CR>', { desc = "Recent files" })
 
 -- [ General ]
 map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = "Clear highlights" })
+map('n', '<leader>h', '<cmd>nohlsearch<CR>', { desc = "Hide highlights" })
 
 -- [ Clipboard ]
 map({'n', 'v'}, '<leader>y', '"+y', { desc = "Yank to system" })
