@@ -4,8 +4,16 @@ function M.setup()
   require('blink.cmp').setup({
     keymap = {
       preset = 'default',
-      ['<Tab>'] = { 'select_next', 'fallback' },
+      ['<Tab>'] = {
+        function(cmp)
+          if cmp.is_visible() then cmp.select_next(); return true end
+          local ok, copilot = pcall(require, 'copilot.suggestion')
+          if ok and copilot.is_visible() then copilot.accept(); return true end
+        end,
+        'fallback',
+      },
       ['<S-Tab>'] = { 'select_prev', 'fallback' },
+      ['<Esc>'] = { 'hide', 'fallback' },
       ['<CR>'] = { 'accept', 'fallback' },
     },
     appearance = {

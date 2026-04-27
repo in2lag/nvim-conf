@@ -14,6 +14,7 @@ vim.pack.add({
   { src = 'https://github.com/folke/which-key.nvim'},
   { src = 'https://github.com/stevearc/conform.nvim'},
   { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('1.*') },
+  { src = 'https://github.com/zbirenbaum/copilot.lua' },
 })
 
 if vim.loader then vim.loader.enable() end
@@ -26,6 +27,7 @@ require('ui.numbers')
 require('ui.whichkey')
 require('ui.format')
 require('ui.completion')
+require('ai.copilot')
 require("gruvbox").setup()
 vim.cmd.colorscheme("gruvbox")
 
