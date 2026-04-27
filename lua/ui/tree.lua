@@ -10,7 +10,7 @@ function M.setup()
       update_root = true,
     },
     view = {
-      width = 32,
+      width = 45,
       side = "left",
     },
     renderer = {

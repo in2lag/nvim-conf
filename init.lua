@@ -13,6 +13,7 @@ vim.pack.add({
   { src = 'https://github.com/sindrets/diffview.nvim'},
   { src = 'https://github.com/folke/which-key.nvim'},
   { src = 'https://github.com/stevearc/conform.nvim'},
+  { src = 'https://github.com/Saghen/blink.cmp', version = vim.version.range('1.*') },
 })
 
 if vim.loader then vim.loader.enable() end
@@ -24,6 +25,7 @@ require('ui.tree')
 require('ui.numbers')
 require('ui.whichkey')
 require('ui.format')
+require('ui.completion')
 require("gruvbox").setup()
 vim.cmd.colorscheme("gruvbox")
 
@@ -54,25 +56,9 @@ vim.lsp.config('vtsls', {
 vim.lsp.enable('vtsls')
 
 
--- Autocomplete
-vim.keymap.set('i', '<Tab>', function()
-  return vim.fn.pumvisible() == 1 and "<C-n>" or "<Tab>"
-end, { expr = true })
-vim.keymap.set('i', '<S-Tab>', function()
-  return vim.fn.pumvisible() == 1 and "<C-p>" or "<S-Tab>"
-end, { expr = true })
-vim.keymap.set('i', '<CR>', function()
-  return vim.fn.pumvisible() == 1 and "<C-y>" or "<CR>"
-end, { expr = true })
-vim.opt.complete = ".,w,b,u,t"
 vim.opt.infercase = true
-vim.opt.completeopt = { "menu", "menuone", "noinsert" }
-vim.opt.autocompletedelay = 100 -- ms before menu appears
 vim.opt.pumheight = 10
 vim.opt.smartcase = true
-vim.opt.completeopt:append("nearest")
-vim.g.complete_priority = { lsp = 10, buffer = 5, snippets = 8 }
-vim.o.autocomplete = true
 
 
 
