@@ -1,0 +1,24 @@
+# Neovim plugin/runtime data
+pack/
+plugin/packer_compiled.lua
+lazy-lock.json.bak
+spell/
+shada/
+view/
+undo/
+swap/
+backup/
+sessions/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+tags
+
+# Local Claude Code settings (keep shared settings.json if any)
+.claude/settings.local.json
