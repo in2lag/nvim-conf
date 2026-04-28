@@ -14,7 +14,18 @@ function M.setup()
 
   local actions = require('telescope.actions')
   require('telescope').setup({
+    defaults = {
+      vimgrep_arguments = {
+        'rg', '--color=never', '--no-heading', '--with-filename',
+        '--line-number', '--column', '--smart-case',
+        '--hidden', '--glob=!**/.git/*',
+      },
+    },
     pickers = {
+      find_files = {
+        hidden = true,
+        file_ignore_patterns = { '%.git/' },
+      },
       buffers = {
         mappings = {
           i = { ['<C-d>'] = actions.delete_buffer },
