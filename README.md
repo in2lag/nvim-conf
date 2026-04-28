@@ -20,6 +20,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── completion.lua   blink.cmp (LSP, buffer, path, snippets)
 │   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)
 │   │   ├── git.lua          gitsigns + diffview (tuned theme, q-close)
+│   │   ├── markdown.lua     render-markdown.nvim (in-buffer preview)
 │   │   ├── numbers.lua      Hybrid line numbers + custom statuscolumn
 │   │   ├── peek.lua         goto-preview (peek defs/refs in a float)
 │   │   ├── search.lua       Search behavior + replace shortcut
@@ -59,6 +60,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | Sessions          | `auto-session` (per-cwd auto save)       |
 | Formatter         | `conform.nvim`                           |
 | Leader hints      | `which-key.nvim`                         |
+| Markdown preview  | `render-markdown.nvim` (in-buffer)       |
 
 ## Completion & AI Keymaps
 
@@ -106,6 +108,9 @@ Float window over the current buffer with the requested LSP info.
 | `<leader>sr`         | Search & replace word under cursor (in file) |
 | `<C-d>` / `dd` in buffers picker | Delete the highlighted buffer    |
 
+`find_files` and `live_grep` include hidden files; `.git/` is excluded.
+`.gitignore` is honored via ripgrep's defaults.
+
 ## Git Keymaps
 
 | Key          | Action                                       |
@@ -125,6 +130,17 @@ Set in `lua/core/options.lua`:
   `›` for tabs, `·` for leading and trailing spaces, `␣` for non-breaking space.
 - Domain-specific opts (search case, completion popup, line numbers,
   diff scroll sync) live next to the feature they belong to under `lua/ui/`.
+
+## Markdown
+
+`render-markdown.nvim` renders Markdown directly inside the buffer using
+treesitter virtual text — headings get icons, code fences get a background
++ language label, lists/checkboxes use proper symbols, tables align. The
+line under the cursor falls back to raw markup while you're editing it.
+
+| Key          | Action                       |
+| ------------ | ---------------------------- |
+| `<leader>mp` | Toggle Markdown rendering    |
 
 ## Sessions
 
