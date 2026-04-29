@@ -146,9 +146,15 @@ Set in `lua/core/options.lua`:
 ## Markdown
 
 `render-markdown.nvim` renders Markdown directly inside the buffer using
-treesitter virtual text — headings get icons, code fences get a background
-+ language label, lists/checkboxes use proper symbols, tables align. The
-line under the cursor falls back to raw markup while you're editing it.
+treesitter virtual text — code fences get a background + language label,
+lists/checkboxes use proper symbols, tables align. The line under the
+cursor falls back to raw markup while you're editing it.
+
+Headings have no icons or background bars — just bold text in a distinct
+gruvbox-bright color per level (H1 red → H2 orange → H3 yellow → H4 green
+→ H5 blue → H6 pink). Colors are applied by overriding the treesitter
+heading captures (`@markup.heading.N.markdown`) on every `ColorScheme`,
+so the colorscheme load order doesn't wipe them.
 
 | Key          | Action                       |
 | ------------ | ---------------------------- |
