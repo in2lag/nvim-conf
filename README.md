@@ -111,6 +111,16 @@ Float window over the current buffer with the requested LSP info.
 `find_files` and `live_grep` include hidden files; `.git/` is excluded.
 `.gitignore` is honored via ripgrep's defaults.
 
+## File Tree
+
+`nvim-tree` opens on the left at 50 columns. The `.git/` directory is filtered
+out of the listing.
+
+| Key          | Action                                              |
+| ------------ | --------------------------------------------------- |
+| `<leader>e`  | Open tree → focus tree → jump back to code (toggle) |
+| `<leader>E`  | Close tree sidebar                                  |
+
 ## Git Keymaps
 
 | Key          | Action                                       |

@@ -10,12 +10,15 @@ function M.setup()
       update_root = true,
     },
     view = {
-      width = 45,
+      width = 50,
       side = "left",
     },
     renderer = {
       highlight_git = true,
       indent_markers = { enable = true },
+    },
+    filters = {
+      custom = { "^.git$" },
     },
   })
 
@@ -49,6 +52,18 @@ function M.setup()
   end
   vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 
+  -- 5. KEEP TREE PINNED TO LEFT (no horizontal scroll on long names)
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "NvimTree",
+    callback = function(args)
+      vim.api.nvim_create_autocmd("CursorMoved", {
+        buffer = args.buf,
+        callback = function()
+          vim.fn.winrestview({ leftcol = 0 })
+        end,
+      })
+    end,
+  })
 end
 
 M.setup()
