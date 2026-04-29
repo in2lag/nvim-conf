@@ -18,9 +18,19 @@ function M.setup()
 			min_width = 60,
 		},
 		checkbox = {
-			unchecked = { icon = "󰄱 " },
-			checked = { icon = "󰱒 " },
+			unchecked = { icon = "󰄱 ", highlight = "RenderMarkdownUnchecked" },
+			checked = { icon = "󰱒 ", highlight = "RenderMarkdownChecked" },
 		},
+		bullet = {
+			icons = { "●" },
+			highlight = {
+				"RenderMarkdownBullet1",
+				"RenderMarkdownBullet2",
+				"RenderMarkdownBullet3",
+				"RenderMarkdownBullet4",
+			},
+		},
+		link = { enabled = false },
 	})
 
 	local function set_heading_hls()
@@ -38,6 +48,15 @@ function M.setup()
 			vim.api.nvim_set_hl(0, "@markup.heading." .. i, opts)
 			vim.api.nvim_set_hl(0, "markdownH" .. i, opts)
 		end
+		local bullet_colors = { "#8caaee", "#a6d189", "#ef9f76", "#ca9ee6" }
+		for i, c in ipairs(bullet_colors) do
+			vim.api.nvim_set_hl(0, "RenderMarkdownBullet" .. i, { fg = c })
+		end
+		vim.api.nvim_set_hl(0, "RenderMarkdownUnchecked", { fg = "#e5c890" })
+		vim.api.nvim_set_hl(0, "RenderMarkdownChecked", { fg = "#a6d189" })
+		local label_hl = vim.api.nvim_get_hl(0, { name = "@markup.link.label", link = false })
+		label_hl.underline = true
+		vim.api.nvim_set_hl(0, "@markup.link.label.markdown_inline", label_hl)
 	end
 	set_heading_hls()
 	vim.api.nvim_create_autocmd("ColorScheme", {

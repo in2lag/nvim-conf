@@ -161,6 +161,12 @@ Catppuccin-Frappé color per level (H1 red → H2 peach → H3 yellow → H4 gre
 heading captures (`@markup.heading.N.markdown`) on every `ColorScheme`,
 so the colorscheme load order doesn't wipe them.
 
+Bullet lists use a single filled circle (`●`) at every depth, but the color
+cycles per nesting level (blue → green → peach → mauve). Checkboxes are
+colored too: unchecked is yellow, checked is green. Inline link labels are
+underlined; the per-domain link icons (Google, GitHub, etc.) are disabled
+so labels read cleanly.
+
 | Key          | Action                       |
 | ------------ | ---------------------------- |
 | `<leader>mp` | Toggle Markdown rendering    |
