@@ -34,10 +34,10 @@ function M.setup()
 
   -- Apply Colors
   local function apply_colors()
-    vim.api.nvim_set_hl(0, "LineNr", { fg = "#737aa2" })
-    vim.api.nvim_set_hl(0, "LineNrAbove", { fg = "#7aa2f7" })
-    vim.api.nvim_set_hl(0, "LineNrBelow", { fg = "#bb9af7" })
-    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ff9e64", bold = true })
+    vim.api.nvim_set_hl(0, "LineNr",       { fg = "#babbf1" })
+    vim.api.nvim_set_hl(0, "LineNrAbove",  { fg = "#8caaee" })
+    vim.api.nvim_set_hl(0, "LineNrBelow",  { fg = "#ca9ee6" })
+    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ef9f76", bold = true })
   end
 
   vim.api.nvim_create_autocmd("ColorScheme", {

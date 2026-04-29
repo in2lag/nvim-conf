@@ -47,7 +47,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | Area              | Plugin / Mechanism                       |
 | ----------------- | ---------------------------------------- |
 | Package manager   | `vim.pack` (built-in, Neovim 0.12+)      |
-| Theme             | `gruvbox.nvim`                           |
+| Theme             | `catppuccin/nvim` (Frappé flavour)       |
 | Fuzzy finder      | `telescope.nvim` + `plenary.nvim`        |
 | File tree         | `nvim-tree.lua` + `nvim-web-devicons`    |
 | Git: signs        | `gitsigns.nvim`                          |
@@ -130,6 +130,11 @@ directories are filtered out of the listing.
 | `<leader>gd` | Toggle Diffview (open / close)               |
 | `q` (in Diffview) | Close Diffview                          |
 
+`DiffAdd`/`DiffDelete`/`DiffChange`/`DiffText` are overridden in
+`lua/ui/git.lua` with muted Frappé-tinted backgrounds so diffs read
+quietly — the inline word-diff (`DiffText`) is a slightly brighter green
+than `DiffAdd` but no longer bold. Re-applied on every `ColorScheme`.
+
 ## Editor Defaults
 
 Set in `lua/core/options.lua`:
@@ -151,8 +156,8 @@ lists/checkboxes use proper symbols, tables align. The line under the
 cursor falls back to raw markup while you're editing it.
 
 Headings have no icons or background bars — just bold text in a distinct
-gruvbox-bright color per level (H1 red → H2 orange → H3 yellow → H4 green
-→ H5 blue → H6 pink). Colors are applied by overriding the treesitter
+Catppuccin-Frappé color per level (H1 red → H2 peach → H3 yellow → H4 green
+→ H5 blue → H6 mauve). Colors are applied by overriding the treesitter
 heading captures (`@markup.heading.N.markdown`) on every `ColorScheme`,
 so the colorscheme load order doesn't wipe them.
 

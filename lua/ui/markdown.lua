@@ -25,8 +25,8 @@ function M.setup()
 
   local function set_heading_hls()
     local levels = {
-      { '#fb4934' }, { '#fe8019' }, { '#fabd2f' },
-      { '#b8bb26' }, { '#83a598' }, { '#d3869b' },
+      { '#e78284' }, { '#ef9f76' }, { '#e5c890' },
+      { '#a6d189' }, { '#8caaee' }, { '#ca9ee6' },
     }
     for i, c in ipairs(levels) do
       local opts = { fg = c[1], bold = true }
