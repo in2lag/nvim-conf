@@ -6,7 +6,7 @@ vim.opt.softtabstop = 2
 vim.opt.expandtab = true
 
 vim.opt.list = true
-vim.opt.listchars = { tab = '› ', lead = '·', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = "› ", lead = "·", trail = "·", nbsp = "␣" }
 
 vim.opt.title = true
 vim.opt.titlestring = "nvim - %{fnamemodify(getcwd(), ':t')}"
