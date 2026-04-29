@@ -113,8 +113,8 @@ Float window over the current buffer with the requested LSP info.
 
 ## File Tree
 
-`nvim-tree` opens on the left at 50 columns. The `.git/` directory is filtered
-out of the listing.
+`nvim-tree` opens on the left at 50 columns. The `.git/` and `.claude/`
+directories are filtered out of the listing.
 
 | Key          | Action                                              |
 | ------------ | --------------------------------------------------- |

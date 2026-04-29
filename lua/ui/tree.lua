@@ -18,7 +18,7 @@ function M.setup()
       indent_markers = { enable = true },
     },
     filters = {
-      custom = { "^.git$" },
+      custom = { "^.git$", "^.claude$" },
     },
   })
 
