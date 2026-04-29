@@ -138,6 +138,8 @@ Set in `lua/core/options.lua`:
 - `termguicolors` for true-color UI.
 - Gentle whitespace visualization via `list` + `listchars`:
   `›` for tabs, `·` for leading and trailing spaces, `␣` for non-breaking space.
+- Terminal/window title set to `nvim - <project>` (basename of `cwd`) via
+  `title` + `titlestring`.
 - Domain-specific opts (search case, completion popup, line numbers,
   diff scroll sync) live next to the feature they belong to under `lua/ui/`.
 
