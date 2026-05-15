@@ -2,6 +2,12 @@ local M = {}
 
 function M.setup()
 	require("gitsigns").setup({
+		current_line_blame = true,
+		current_line_blame_opts = {
+			delay = 300,
+			virt_text_pos = "eol",
+		},
+		current_line_blame_formatter = "<author>, <author_time:%R> • <summary>",
 		on_attach = function(bufnr)
 			local gs = package.loaded.gitsigns
 			vim.keymap.set("n", "]c", gs.next_hunk, { buffer = bufnr, desc = "Next Change" })
@@ -11,6 +17,12 @@ function M.setup()
 				"<leader>gp",
 				gs.preview_hunk_inline,
 				{ buffer = bufnr, desc = "Preview Change Inline" }
+			)
+			vim.keymap.set(
+				"n",
+				"<leader>gt",
+				gs.toggle_current_line_blame,
+				{ buffer = bufnr, desc = "Toggle Line Blame" }
 			)
 		end,
 	})
@@ -38,6 +50,12 @@ function M.setup()
 					"q",
 					"<cmd>DiffviewClose<CR>",
 					{ buffer = true, nowait = true, desc = "Close Diffview" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>gs",
+					require("diffview.actions").toggle_stage_entry,
+					{ buffer = true, desc = "Stage File" }
 				)
 			end,
 			view_opened = function()
@@ -78,6 +96,7 @@ function M.setup()
 		vim.api.nvim_set_hl(0, "DiffviewStatusUnmerged", { fg = "#ca9ee6", bold = true })
 		vim.api.nvim_set_hl(0, "DiffviewFilePanelTitle", { fg = "#ef9f76", bold = true })
 		vim.api.nvim_set_hl(0, "DiffviewFilePanelCounter", { fg = "#e5c890", bold = true })
+		vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", { fg = "#949cbb", italic = true })
 	end
 	apply_diff_hl()
 	vim.api.nvim_create_autocmd("ColorScheme", { callback = apply_diff_hl })
