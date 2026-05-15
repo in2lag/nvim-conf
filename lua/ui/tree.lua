@@ -66,6 +66,23 @@ function M.setup()
 			})
 		end,
 	})
+
+	-- 6. Clear statuscolumn on the tree window (window-local).
+	--    nvim-tree disables number/relativenumber but doesn't touch
+	--    statuscolumn, so the global custom function from numbers.lua
+	--    keeps drawing line numbers there. Force-empty it here.
+	local function clear_tree_statuscolumn()
+		for _, win in ipairs(vim.api.nvim_list_wins()) do
+			local buf = vim.api.nvim_win_get_buf(win)
+			if vim.bo[buf].filetype == "NvimTree" then
+				vim.api.nvim_set_option_value("statuscolumn", "", { scope = "local", win = win })
+			end
+		end
+	end
+	vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter", "WinNew" }, {
+		group = vim.api.nvim_create_augroup("NvimTreeStatusColumn", { clear = true }),
+		callback = vim.schedule_wrap(clear_tree_statuscolumn),
+	})
 end
 
 M.setup()
