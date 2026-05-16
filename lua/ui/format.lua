@@ -31,6 +31,21 @@ function M.setup()
 					"package.json",
 				}),
 			},
+			goimports = {
+				prepend_args = function(_, ctx)
+					local gomod = vim.fs.find("go.mod", { upward = true, path = ctx.dirname, type = "file" })[1]
+					if not gomod then
+						return {}
+					end
+					for line in io.lines(gomod) do
+						local mod = line:match("^module%s+(%S+)")
+						if mod then
+							return { "-local", mod }
+						end
+					end
+					return {}
+				end,
+			},
 		},
 		formatters_by_ft = {
 			javascript = web,
@@ -47,6 +62,7 @@ function M.setup()
 			yaml = { "prettier" },
 			markdown = { "prettier" },
 			lua = { "stylua" },
+			go = { "goimports" },
 		},
 		format_on_save = function(bufnr)
 			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
