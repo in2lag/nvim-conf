@@ -5,7 +5,7 @@ function M.setup()
 		suggestion = {
 			enabled = true,
 			auto_trigger = true,
-			hide_during_completion = true,
+			hide_during_completion = false,
 			keymap = {
 				accept = "<M-l>",
 				accept_word = "<M-Right>",

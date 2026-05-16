@@ -65,20 +65,23 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 ## Completion & AI Keymaps
 
 `blink.cmp` drives the completion menu; `copilot.lua` shows full-line ghost
-text. The menu wins when both are visible (VSCode-style).
+text. Both render simultaneously (VSCode-style): the menu is a floating
+window, Copilot is inline virt_text, so they don't fight for the same space.
+The first menu item is preselected (highlighted but not inserted) so `<Tab>`
+always has a target.
 
-| Key                | Action                                              |
-| ------------------ | --------------------------------------------------- |
-| `<Tab>`            | Cycle menu if open → accept Copilot → literal tab   |
-| `<S-Tab>`          | Cycle menu backwards                                |
-| `<CR>`             | Accept selected menu item                           |
-| `<C-n>` / `<C-p>`  | Cycle menu next / prev                              |
-| `<Esc>`            | Hide menu (stay in insert; Copilot ghost text stays)|
-| `<C-e>`            | Cancel menu                                         |
-| `<M-l>`            | Always-on Copilot accept                            |
-| `<M-Right>`        | Accept next word from Copilot                       |
-| `<M-]>` / `<M-[>`  | Cycle Copilot alternatives                          |
-| `<C-]>`            | Dismiss Copilot ghost text                          |
+| Key                | Action                                                       |
+| ------------------ | ------------------------------------------------------------ |
+| `<Tab>`            | Accept menu item → jump snippet → accept Copilot → real tab  |
+| `<S-Tab>`          | Jump snippet backward → select previous menu item            |
+| `<CR>`             | Accept selected menu item                                    |
+| `<C-n>` / `<C-p>`  | Cycle menu next / prev                                       |
+| `<Esc>`            | Hide menu (stay in insert; Copilot ghost text stays)         |
+| `<C-e>`            | Cancel menu                                                  |
+| `<M-l>`            | Always-on Copilot accept                                     |
+| `<M-Right>`        | Accept next word from Copilot                                |
+| `<M-]>` / `<M-[>`  | Cycle Copilot alternatives                                   |
+| `<C-]>`            | Dismiss Copilot ghost text                                   |
 
 ## Peek Keymaps (`goto-preview`)
 

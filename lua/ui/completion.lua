@@ -8,11 +8,9 @@ function M.setup()
 		keymap = {
 			preset = "default",
 			["<Tab>"] = {
-				function(cmp)
-					if cmp.is_visible() then
-						cmp.select_next()
-						return true
-					end
+				"select_and_accept",
+				"snippet_forward",
+				function()
 					local ok, copilot = pcall(require, "copilot.suggestion")
 					if ok and copilot.is_visible() then
 						copilot.accept()
@@ -21,7 +19,7 @@ function M.setup()
 				end,
 				"fallback",
 			},
-			["<S-Tab>"] = { "select_prev", "fallback" },
+			["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
 			["<Esc>"] = { "hide", "fallback" },
 			["<CR>"] = { "accept", "fallback" },
 		},
@@ -32,6 +30,9 @@ function M.setup()
 			default = { "lsp", "path", "snippets", "buffer" },
 		},
 		completion = {
+			list = {
+				selection = { preselect = true, auto_insert = false },
+			},
 			documentation = { auto_show = true, auto_show_delay_ms = 200 },
 			ghost_text = { enabled = false },
 		},
