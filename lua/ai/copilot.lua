@@ -25,5 +25,19 @@ function M.setup()
 	})
 end
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function(args)
+		vim.keymap.set("i", "<Tab>", function()
+			local ok, copilot = pcall(require, "copilot.suggestion")
+			if ok and copilot.is_visible() then
+				copilot.accept()
+				return ""
+			end
+			return "\t"
+		end, { buffer = args.buf, expr = true, desc = "Accept Copilot or insert Tab" })
+	end,
+})
+
 M.setup()
 return M

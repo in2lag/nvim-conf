@@ -29,6 +29,9 @@ function M.setup()
 		sources = {
 			default = { "lsp", "path", "snippets", "buffer" },
 		},
+		enabled = function()
+			return vim.bo.filetype ~= "markdown"
+		end,
 		completion = {
 			list = {
 				selection = { preselect = true, auto_insert = false },

@@ -116,8 +116,8 @@ Float window over the current buffer with the requested LSP info.
 
 ## File Tree
 
-`nvim-tree` opens on the left at 50 columns. The `.git/` and `.claude/`
-directories are filtered out of the listing.
+`nvim-tree` opens on the left at 50 columns. The `.git/` directory is
+filtered out of the listing.
 
 | Key          | Action                                              |
 | ------------ | --------------------------------------------------- |
@@ -173,6 +173,12 @@ so labels read cleanly.
 | Key          | Action                       |
 | ------------ | ---------------------------- |
 | `<leader>mp` | Toggle Markdown rendering    |
+
+`blink.cmp` is disabled in markdown buffers so the completion menu doesn't
+fight with the prose flow. Copilot ghost text still works, and `<Tab>` is
+remapped buffer-locally in markdown to accept the suggestion (or insert a
+real tab if no suggestion is visible). Markdown is formatted with `prettier`
+via `conform.nvim` on save.
 
 ## Sessions
 

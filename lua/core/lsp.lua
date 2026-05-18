@@ -20,6 +20,7 @@ function M.setup()
 	vim.lsp.config("vtsls", {
 		settings = {
 			typescript = {
+				tsdk = "/Users/petrprchal/.nvm/versions/node/v22.15.0/lib/node_modules/typescript/lib",
 				updateImportsOnFileMove = { enabled = "always" },
 				inlayHints = {
 					parameterNames = { enabled = "all" },
