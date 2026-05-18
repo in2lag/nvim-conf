@@ -24,6 +24,7 @@ map({ "n", "v" }, "<leader>x", '"_d', { desc = "Black hole delete" })
 -- [ Editing ]
 map("n", "<leader>d", "yyp", { desc = "Duplicate line" })
 map("v", "<leader>d", "yP", { desc = "Duplicate selection" })
+map("n", "U", "<C-r>", { desc = "Redo" })
 
 -- [ Smart Home ]
 map("n", "<Home>", function()

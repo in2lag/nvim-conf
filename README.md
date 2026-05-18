@@ -97,6 +97,18 @@ Float window over the current buffer with the requested LSP info.
 | `q` / `<Esc>` (in float) | Close the peek                     |
 | `<CR>` (in float)        | Promote peek to full buffer         |
 
+## Editing Keymaps
+
+| Key          | Action                                       |
+| ------------ | -------------------------------------------- |
+| `u`          | Undo (default)                               |
+| `U`          | Redo (replaces default "undo line")          |
+| `<leader>d`  | Duplicate line / selection                   |
+| `<leader>y`  | Yank to system clipboard                     |
+| `<leader>v`  | Paste from system clipboard                  |
+| `<leader>P`  | Paste over selection without losing yank     |
+| `<leader>x`  | Black-hole delete (no clobber of yank)       |
+
 ## Find / Search Keymaps (Telescope)
 
 | Key                  | Action                                       |
