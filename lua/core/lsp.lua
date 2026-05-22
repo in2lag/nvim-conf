@@ -19,6 +19,17 @@ end
 function M.setup()
 	vim.lsp.config("vtsls", {
 		settings = {
+			vtsls = {
+				tsserver = {
+					globalPlugins = {
+						{
+							name = "typescript-svelte-plugin",
+							location = "/Users/petrprchal/.nvm/versions/node/v22.15.0/lib/node_modules/typescript-svelte-plugin",
+							enableForWorkspaceTypeScriptVersions = true,
+						},
+					},
+				},
+			},
 			typescript = {
 				tsdk = "/Users/petrprchal/.nvm/versions/node/v22.15.0/lib/node_modules/typescript/lib",
 				updateImportsOnFileMove = { enabled = "always" },
@@ -30,6 +41,9 @@ function M.setup()
 		},
 	})
 	vim.lsp.enable("vtsls")
+
+	vim.lsp.config("svelte", {})
+	vim.lsp.enable("svelte")
 
 	vim.lsp.config("gopls", {
 		before_init = function(_, config)

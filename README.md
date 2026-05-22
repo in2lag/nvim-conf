@@ -13,7 +13,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 ├── lua/
 │   ├── core/
 │   │   ├── keymaps.lua      Leader, clipboard, editing, smart Home
-│   │   ├── lsp.lua          LSP server config (vtsls)
+│   │   ├── lsp.lua          LSP server config (vtsls, gopls, svelte)
 │   │   ├── options.lua      Global opts (indent=2, termguicolors, listchars)
 │   │   └── treesitter.lua   tree-sitter-manager + parser list
 │   ├── ui/
@@ -52,7 +52,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | File tree         | `nvim-tree.lua` + `nvim-web-devicons`    |
 | Git: signs        | `gitsigns.nvim`                          |
 | Git: diff view    | `diffview.nvim`                          |
-| LSP               | `nvim-lspconfig` + `vtsls` (TypeScript)  |
+| LSP               | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte` |
 | Tree-sitter       | `tree-sitter-manager.nvim`               |
 | Completion menu   | `blink.cmp` (Lua fuzzy matcher)          |
 | AI suggestions    | `copilot.lua` (ghost text)               |
@@ -96,6 +96,11 @@ Float window over the current buffer with the requested LSP info.
 | `gpc` | Close all peek windows                            |
 | `q` / `<Esc>` (in float) | Close the peek                     |
 | `<CR>` (in float)        | Promote peek to full buffer         |
+
+`svelte-language-server` runs on `.svelte` buffers so peek/refs work from
+inside Svelte components. `vtsls` is configured with `typescript-svelte-plugin`
+as a global TS server plugin, so references on a TS symbol also surface
+usages from `.svelte` files. Both packages live in the global npm prefix.
 
 ## Editing Keymaps
 
@@ -143,6 +148,7 @@ filtered out of the listing.
 | `]c` / `[c`  | Next / previous hunk (gitsigns)              |
 | `<leader>gp` | Inline preview of the current hunk           |
 | `<leader>gd` | Toggle Diffview (open / close)               |
+| `<leader>gr` (in Diffview) | Revert file to base                |
 | `q` (in Diffview) | Close Diffview                          |
 
 `DiffAdd`/`DiffDelete`/`DiffChange`/`DiffText` are overridden in

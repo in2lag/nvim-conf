@@ -57,6 +57,12 @@ function M.setup()
 					require("diffview.actions").toggle_stage_entry,
 					{ buffer = true, desc = "Stage File" }
 				)
+				vim.keymap.set(
+					"n",
+					"<leader>gr",
+					require("diffview.actions").restore_entry,
+					{ buffer = true, desc = "Revert File" }
+				)
 			end,
 			view_opened = function()
 				vim.schedule(function()
@@ -120,6 +126,12 @@ function M.setup()
 				"q",
 				"<cmd>DiffviewClose<CR>",
 				{ buffer = args.buf, nowait = true, desc = "Close Diffview" }
+			)
+			vim.keymap.set(
+				"n",
+				"<leader>gr",
+				require("diffview.actions").restore_entry,
+				{ buffer = args.buf, desc = "Revert File" }
 			)
 		end,
 	})
