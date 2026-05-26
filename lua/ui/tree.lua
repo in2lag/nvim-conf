@@ -43,18 +43,7 @@ function M.setup()
 	-- Use Capital E to actually shut the sidebar down
 	vim.keymap.set("n", "<leader>E", "<cmd>NvimTreeClose<CR>", { desc = "Close Tree Sidebar" })
 
-	-- 4. AUTO-OPEN ON STARTUP
-	local function open_nvim_tree(data)
-		local real_file = vim.fn.filereadable(data.file) == 1
-		local no_name = data.file == "" and vim.bo.buftype == ""
-		if not real_file and not no_name then
-			return
-		end
-		require("nvim-tree.api").tree.toggle({ focus = false, find_file = true })
-	end
-	vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
-
-	-- 5. KEEP TREE PINNED TO LEFT (no horizontal scroll on long names)
+	-- 4. KEEP TREE PINNED TO LEFT (no horizontal scroll on long names)
 	vim.api.nvim_create_autocmd("FileType", {
 		pattern = "NvimTree",
 		callback = function(args)
@@ -67,7 +56,7 @@ function M.setup()
 		end,
 	})
 
-	-- 6. Clear statuscolumn on the tree window (window-local).
+	-- 5. Clear statuscolumn on the tree window (window-local).
 	--    nvim-tree disables number/relativenumber but doesn't touch
 	--    statuscolumn, so the global custom function from numbers.lua
 	--    keeps drawing line numbers there. Force-empty it here.
