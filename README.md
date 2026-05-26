@@ -36,9 +36,10 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 1. Clone into `~/.config/nvim`.
 2. Launch `nvim`. `vim.pack` resolves plugins from `nvim-pack-lock.json` on
    first run and clones them into the pack directory.
-3. Tree-sitter parsers listed in `init.lua` (`typescript`, `tsx`,
-   `javascript`, `svelte`, `html`, `css`) install on first start via
-   `tree-sitter-manager`.
+3. Tree-sitter parsers listed in `lua/core/treesitter.lua` (`typescript`,
+   `tsx`, `javascript`, `svelte`, `html`, `css`, `markdown`,
+   `markdown_inline`, `go`, `gomod`, `gosum`, `gowork`) install on first
+   start via `tree-sitter-manager`.
 4. Run `:Copilot auth` once to authorize GitHub Copilot.
 5. The leader key is `<Space>`.
 
