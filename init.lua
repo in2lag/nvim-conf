@@ -18,6 +18,7 @@ vim.pack.add({
 	{ src = "https://github.com/rmagatti/auto-session" },
 	{ src = "https://github.com/rmagatti/goto-preview" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim" },
 })
 
 if vim.loader then

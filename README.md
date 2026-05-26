@@ -61,6 +61,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | Formatter         | `conform.nvim`                           |
 | Leader hints      | `which-key.nvim`                         |
 | Markdown preview  | `render-markdown.nvim` (in-buffer)       |
+| Rainbow brackets  | `rainbow-delimiters.nvim` (tree-sitter)  |
 
 ## Completion & AI Keymaps
 
