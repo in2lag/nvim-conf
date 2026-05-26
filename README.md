@@ -194,6 +194,12 @@ filtered out of the listing.
 | `<leader>gr` (in Diffview) | Revert file to base                |
 | `q` (in Diffview) | Close Diffview                          |
 
+Inline blame is on with `delay = 0` — the author, commit time, and
+summary appear at end of line as soon as the cursor lands, with no
+wait. Gitsigns caches blame per line so repeat hits are free. See the
+Diagnostics section for how blame is suppressed on lines with a
+diagnostic to avoid the two fighting for the same eol slot.
+
 `DiffAdd`/`DiffDelete`/`DiffChange`/`DiffText` are overridden in
 `lua/ui/git.lua` with muted Frappé-tinted backgrounds so diffs read
 quietly — the inline word-diff (`DiffText`) is a slightly brighter green
