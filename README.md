@@ -40,8 +40,9 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 3. Tree-sitter parsers listed in `lua/core/treesitter.lua` (`typescript`,
    `tsx`, `javascript`, `svelte`, `html`, `css`, `markdown`,
    `markdown_inline`, `go`, `gomod`, `gosum`, `gowork`, `lua`, `vim`,
-   `vimdoc`, `query`, `bash`, `json`, `jsonc`, `yaml`, `toml`) install on
-   first start via `tree-sitter-manager`.
+   `vimdoc`, `query`, `bash`, `json`, `yaml`, `toml`) install on first
+   start via `tree-sitter-manager`. `.jsonc` files reuse the `json`
+   parser via `vim.treesitter.language.register`.
 4. Run `:Copilot auth` once to authorize GitHub Copilot.
 5. The leader key is `<Space>`.
 

@@ -21,11 +21,13 @@ function M.setup()
 			"query",
 			"bash",
 			"json",
-			"jsonc",
 			"yaml",
 			"toml",
 		},
 	})
+
+	-- jsonc has no dedicated parser in tree-sitter-manager; reuse json.
+	vim.treesitter.language.register("json", "jsonc")
 end
 
 M.setup()
