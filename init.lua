@@ -19,6 +19,7 @@ vim.pack.add({
 	{ src = "https://github.com/rmagatti/goto-preview" },
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim" },
+	{ src = "https://github.com/nvim-mini/mini.nvim" },
 })
 
 if vim.loader then
@@ -39,6 +40,7 @@ require("ui.format")
 require("ui.completion")
 require("ui.peek")
 require("ui.diagnostics")
+require("ui.statusline")
 require("ui.markdown")
 require("ai.copilot")
 require("catppuccin").setup({ flavour = "frappe" })

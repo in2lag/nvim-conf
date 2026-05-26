@@ -26,6 +26,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── peek.lua         goto-preview (peek defs/refs in a float)
 │   │   ├── search.lua       Search behavior + replace shortcut
 │   │   ├── session.lua      auto-session (per-cwd session restore)
+│   │   ├── statusline.lua   mini.statusline (global laststatus=3)
 │   │   ├── tree.lua         nvim-tree with smart toggle
 │   │   └── whichkey.lua     which-key prompt for leader bindings
 │   └── ai/
@@ -66,6 +67,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | Leader hints      | `which-key.nvim`                         |
 | Markdown preview  | `render-markdown.nvim` (in-buffer)       |
 | Rainbow brackets  | `rainbow-delimiters.nvim` (tree-sitter)  |
+| Statusline        | `mini.statusline` (from `mini.nvim`)     |
 
 ## Completion & AI Keymaps
 
@@ -247,6 +249,19 @@ fight with the prose flow. Copilot ghost text still works, and `<Tab>` is
 remapped buffer-locally in markdown to accept the suggestion (or insert a
 real tab if no suggestion is visible). Markdown is formatted with `prettier`
 via `conform.nvim` on save.
+
+## Statusline
+
+`mini.statusline` (from `mini.nvim`) — global statusline (`laststatus = 3`,
+one bar across all splits) showing mode, git branch, filename + modified
+flag, diagnostic counts (drawn from the same `vim.diagnostic` config as
+the gutter), filetype + encoding, and cursor location. Uses
+`nvim-web-devicons` for the filetype icon.
+
+The wider `mini.nvim` package is installed as a single repo and unlocks
+the rest of the family (`mini.surround`, `mini.pairs`, `mini.indentscope`,
+etc.) via `require('mini.X').setup()` — no extra downloads needed when
+adding more modules later.
 
 ## Sessions
 
