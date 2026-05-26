@@ -39,9 +39,9 @@ function M.setup()
 		end
 	end, { desc = "Focus Tree or Jump Back to Code" })
 
-	-- 3. EXPLICIT CLOSE MAPPING
-	-- Use Capital E to actually shut the sidebar down
-	vim.keymap.set("n", "<leader>E", "<cmd>NvimTreeClose<CR>", { desc = "Close Tree Sidebar" })
+	-- 3. PLAIN TOGGLE
+	-- <leader>e is the "smart" focus cycle. <leader>E is a straight open/close.
+	vim.keymap.set("n", "<leader>E", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle Tree Sidebar" })
 
 	-- 4. KEEP TREE PINNED TO LEFT (no horizontal scroll on long names)
 	vim.api.nvim_create_autocmd("FileType", {

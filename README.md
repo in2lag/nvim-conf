@@ -231,7 +231,7 @@ filtered out of the listing.
 | Key          | Action                                              |
 | ------------ | --------------------------------------------------- |
 | `<leader>e`  | Open tree → focus tree → jump back to code (toggle) |
-| `<leader>E`  | Close tree sidebar                                  |
+| `<leader>E`  | Toggle tree sidebar (plain open/close)              |
 
 ## Git Keymaps
 
