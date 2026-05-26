@@ -21,12 +21,15 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── diagnostics.lua  vim.diagnostic config + keymaps
 │   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)
 │   │   ├── git.lua          gitsigns + diffview (tuned theme, q-close)
+│   │   ├── indent.lua       mini.indentscope (animated scope guide)
 │   │   ├── markdown.lua     render-markdown.nvim (in-buffer preview)
 │   │   ├── numbers.lua      Hybrid line numbers + custom statuscolumn
+│   │   ├── pairs.lua        mini.pairs (auto-close brackets/quotes)
 │   │   ├── peek.lua         goto-preview (peek defs/refs in a float)
 │   │   ├── search.lua       Search behavior + replace shortcut
 │   │   ├── session.lua      auto-session (per-cwd session restore)
 │   │   ├── statusline.lua   mini.statusline (global laststatus=3)
+│   │   ├── surround.lua     mini.surround (sa/sd/sr text-object pairs)
 │   │   ├── tree.lua         nvim-tree with smart toggle
 │   │   └── whichkey.lua     which-key prompt for leader bindings
 │   └── ai/
@@ -68,6 +71,9 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | Markdown preview  | `render-markdown.nvim` (in-buffer)       |
 | Rainbow brackets  | `rainbow-delimiters.nvim` (tree-sitter)  |
 | Statusline        | `mini.statusline` (from `mini.nvim`)     |
+| Surround pairs    | `mini.surround` (from `mini.nvim`)       |
+| Auto-pairs        | `mini.pairs` (from `mini.nvim`)          |
+| Indent scope      | `mini.indentscope` (from `mini.nvim`)    |
 
 ## Completion & AI Keymaps
 
@@ -159,6 +165,41 @@ new diagnostic on every keystroke.
 | `<leader>v`  | Paste from system clipboard                  |
 | `<leader>P`  | Paste over selection without losing yank     |
 | `<leader>x`  | Black-hole delete (no clobber of yank)       |
+
+## Surround Pairs (`mini.surround`)
+
+Add, change, or delete surrounding characters (parens, quotes, tags, …)
+around a text object. Standard `mini.surround` `s`-prefix:
+
+| Key                       | Action                                          |
+| ------------------------- | ----------------------------------------------- |
+| `sa{motion}{char}`        | Surround **a**dd — e.g. `saiw)` wraps inner word in `()` |
+| `sd{char}`                | Surround **d**elete — e.g. `sd)` removes the surrounding `()` |
+| `sr{from}{to}`            | Surround **r**eplace — e.g. `sr"'` changes `"` to `'` |
+| `sf{char}` / `sF{char}`   | Find next / previous surrounding character      |
+| `sh{char}`                | Highlight the surrounding pair                  |
+| `sa` (in visual)          | Wrap current selection                          |
+
+Note: typing `s` alone (vim's substitute-character) now has a short
+timeout-len delay while `mini.surround` waits to see if you're starting
+`sa`/`sd`/`sr`. If you use `s` heavily, lower `timeoutlen` or use `cl`
+instead (same effect, no delay).
+
+## Auto-pairs (`mini.pairs`)
+
+Typing `(`, `[`, `{`, `"`, `'`, `` ` `` inserts the matching closer with
+the cursor between them. Hitting Enter inside `{}` opens a properly
+indented block. Backspace over the opener also removes the closer.
+
+## Indent Scope (`mini.indentscope`)
+
+Draws a `┊` dotted guide marking the indent scope your cursor is in,
+animated linearly over 80 ms on scope changes. Colored Frappé
+a quiet mauve (`#82768e`, mauve × `Surface2`) so it picks up the same
+hue family as the line numbers and markdown headings but stays muted
+enough to disappear behind code. Disabled in `NvimTree`, `help`,
+`markdown`, `terminal`, and Diffview buffers via a buffer-local
+`miniindentscope_disable` flag.
 
 ## Find / Search Keymaps (Telescope)
 
