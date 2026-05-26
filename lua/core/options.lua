@@ -13,4 +13,6 @@ vim.opt.titlestring = "nvim - %{fnamemodify(getcwd(), ':t')}"
 
 vim.opt.signcolumn = "yes:2"
 
+vim.opt.scrollopt = "ver,jump"
+
 return {}

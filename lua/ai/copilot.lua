@@ -18,7 +18,7 @@ function M.setup()
 		panel = { enabled = false },
 		filetypes = {
 			["*"] = true,
-			gitcommit = false,
+			gitcommit = true,
 			gitrebase = false,
 			help = false,
 		},

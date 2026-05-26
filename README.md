@@ -96,6 +96,11 @@ always has a target.
 | `<M-]>` / `<M-[>`  | Cycle Copilot alternatives                                   |
 | `<C-]>`            | Dismiss Copilot ghost text                                   |
 
+Copilot is enabled in `gitcommit` buffers — running `git commit` (no
+`-m`) opens nvim on `COMMIT_EDITMSG` with the staged diff visible as
+comments, and Copilot drafts the subject line from that context.
+Disabled in `gitrebase` and `help` to stay out of the way.
+
 ## Peek Keymaps (`goto-preview`)
 
 Float window over the current buffer with the requested LSP info.
@@ -259,8 +264,10 @@ Set in `lua/core/options.lua`:
   `›` for tabs, `·` for leading and trailing spaces, `␣` for non-breaking space.
 - Terminal/window title set to `nvim - <project>` (basename of `cwd`) via
   `title` + `titlestring`.
-- Domain-specific opts (search case, completion popup, line numbers,
-  diff scroll sync) live next to the feature they belong to under `lua/ui/`.
+- `signcolumn = "yes:2"` so gitsigns and diagnostic signs each get a cell.
+- `scrollopt = "ver,jump"` so Diffview's two windows stay synced vertically.
+- Domain-specific opts (search case, completion popup, line numbers)
+  live next to the feature they belong to under `lua/ui/`.
 
 ## Markdown
 

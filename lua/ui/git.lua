@@ -101,8 +101,6 @@ function M.setup()
 		},
 	})
 
-	vim.opt.scrollopt = "ver,jump"
-
 	local function apply_diff_hl()
 		local bg = "#363a4a"
 		local add_bg = "#2c3a2e"
