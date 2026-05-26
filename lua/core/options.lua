@@ -15,4 +15,6 @@ vim.opt.signcolumn = "yes:2"
 
 vim.opt.scrollopt = "ver,jump"
 
+vim.opt.cmdheight = 0
+
 return {}

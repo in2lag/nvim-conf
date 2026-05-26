@@ -266,6 +266,8 @@ Set in `lua/core/options.lua`:
   `title` + `titlestring`.
 - `signcolumn = "yes:2"` so gitsigns and diagnostic signs each get a cell.
 - `scrollopt = "ver,jump"` so Diffview's two windows stay synced vertically.
+- `cmdheight = 0` so the cmdline row collapses when idle; `:`/`/` still
+  bring it up, and `:messages` recalls anything that flashed by.
 - Domain-specific opts (search case, completion popup, line numbers)
   live next to the feature they belong to under `lua/ui/`.
 
@@ -300,11 +302,17 @@ via `conform.nvim` on save.
 
 ## Statusline
 
-`mini.statusline` (from `mini.nvim`) — global statusline (`laststatus = 3`,
-one bar across all splits) showing mode, git branch, filename + modified
-flag, diagnostic counts (drawn from the same `vim.diagnostic` config as
-the gutter), filetype + encoding, and cursor location. Uses
-`nvim-web-devicons` for the filetype icon.
+`mini.statusline` (from `mini.nvim`) — global statusline
+(`laststatus = 3`, one bar across all splits) with a custom
+`content.active` that trims the default to: mode, git branch + diff,
+diagnostic counts (from the same `vim.diagnostic` config as the gutter),
+LSP servers, filename + modified flag, search count, filetype (icon via
+`nvim-web-devicons`), and a compact `line:col` location. Encoding,
+fileformat, file size, and percentage-through-file are removed to keep
+the bar quiet.
+
+Paired with `cmdheight = 0` (see Editor Defaults), the statusline sits
+flush against the bottom edge — no dead cmdline row beneath.
 
 The wider `mini.nvim` package is installed as a single repo and unlocks
 the rest of the family (`mini.surround`, `mini.pairs`, `mini.indentscope`,
