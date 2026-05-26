@@ -18,6 +18,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   └── treesitter.lua   tree-sitter-manager + parser list
 │   ├── ui/
 │   │   ├── completion.lua   blink.cmp (LSP, buffer, path, snippets)
+│   │   ├── diagnostics.lua  vim.diagnostic config + keymaps
 │   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)
 │   │   ├── git.lua          gitsigns + diffview (tuned theme, q-close)
 │   │   ├── markdown.lua     render-markdown.nvim (in-buffer preview)
@@ -104,6 +105,45 @@ Float window over the current buffer with the requested LSP info.
 inside Svelte components. `vtsls` is configured with `typescript-svelte-plugin`
 as a global TS server plugin, so references on a TS symbol also surface
 usages from `.svelte` files. Both packages live in the global npm prefix.
+
+## Diagnostics
+
+LSP diagnostics render in three places, configured in `lua/ui/diagnostics.lua`:
+
+- **Sign column** (gutter): a `┃` bar colored by severity (red error,
+  orange warn, etc.), matching the gitsigns shape so the gutter reads
+  as two parallel colored bars. Severity-sorted so the worst issue wins
+  each line.
+  `signcolumn = "yes:2"` reserves two slots so gitsigns (left) and
+  diagnostics (right) coexist without one hiding the other.
+- **Virtual text** (end of line): the diagnostic message on every line
+  that has a diagnostic, including the cursor line. The gitsigns blame
+  is suppressed on lines that have a diagnostic so the two don't fight
+  for the same eol slot:
+
+  ```
+  const foo = bar()    Cannot find name 'bar'                          ← broken line
+  const ok  = 1        Petr, 14:32 • Add ok helper                     ← clean line
+  ```
+
+  Suppression is handled by a function `current_line_blame_formatter` in
+  `lua/ui/git.lua` that returns an empty chunk list `{}` when
+  `vim.diagnostic.get()` reports any diagnostic on the cursor line. A
+  `DiagnosticChanged` autocmd triggers a synthetic `CursorMoved` so the
+  blame re-evaluates as soon as the LSP catches up — no waiting for the
+  next real cursor move.
+- **Float** (`<leader>cd`): full message with source, rounded border.
+
+`update_in_insert` is on — diagnostics refresh live while typing. LSP
+servers (vtsls, gopls) debounce publishing internally, so you don't see a
+new diagnostic on every keystroke.
+
+| Key          | Action                                     |
+| ------------ | ------------------------------------------ |
+| `]d` / `[d`  | Next / prev diagnostic (Neovim default)    |
+| `<C-W>d`     | Open diagnostic float (Neovim default)     |
+| `<leader>cd` | Open diagnostic float at cursor            |
+| `<leader>cq` | Project diagnostics in Telescope           |
 
 ## Editing Keymaps
 

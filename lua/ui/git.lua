@@ -1,13 +1,32 @@
 local M = {}
 
 function M.setup()
+	local function blame_formatter(_, info)
+		local lnum = vim.api.nvim_win_get_cursor(0)[1]
+		if #vim.diagnostic.get(0, { lnum = lnum - 1 }) > 0 then
+			return {}
+		end
+		if not info.author then
+			return {}
+		end
+		local parts = { info.author }
+		if info.author_time then
+			table.insert(parts, os.date("%R", info.author_time))
+		end
+		local text = table.concat(parts, ", ")
+		if info.summary and info.summary ~= "" then
+			text = text .. " • " .. info.summary
+		end
+		return { { text, "GitSignsCurrentLineBlame" } }
+	end
+
 	require("gitsigns").setup({
 		current_line_blame = true,
 		current_line_blame_opts = {
 			delay = 300,
 			virt_text_pos = "eol",
 		},
-		current_line_blame_formatter = "<author>, <author_time:%R> • <summary>",
+		current_line_blame_formatter = blame_formatter,
 		on_attach = function(bufnr)
 			local gs = package.loaded.gitsigns
 			vim.keymap.set("n", "]c", gs.next_hunk, { buffer = bufnr, desc = "Next Change" })
@@ -106,6 +125,17 @@ function M.setup()
 	end
 	apply_diff_hl()
 	vim.api.nvim_create_autocmd("ColorScheme", { callback = apply_diff_hl })
+
+	-- When diagnostics change while the cursor sits still, fake a CursorMoved
+	-- so gitsigns re-runs the blame formatter and the suppression kicks in
+	-- without waiting for the next real cursor move.
+	vim.api.nvim_create_autocmd("DiagnosticChanged", {
+		callback = function(args)
+			if args.buf == vim.api.nvim_get_current_buf() then
+				vim.api.nvim_exec_autocmds("CursorMoved", { modeline = false })
+			end
+		end,
+	})
 
 	local function toggle_diffview()
 		local lib = require("diffview.lib")

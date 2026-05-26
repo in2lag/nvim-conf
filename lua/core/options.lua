@@ -11,6 +11,6 @@ vim.opt.listchars = { tab = "› ", lead = "·", trail = "·", nbsp = "␣" }
 vim.opt.title = true
 vim.opt.titlestring = "nvim - %{fnamemodify(getcwd(), ':t')}"
 
-vim.opt.signcolumn = "yes"
+vim.opt.signcolumn = "yes:2"
 
 return {}
