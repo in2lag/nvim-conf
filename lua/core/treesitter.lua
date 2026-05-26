@@ -15,6 +15,15 @@ function M.setup()
 			"gomod",
 			"gosum",
 			"gowork",
+			"lua",
+			"vim",
+			"vimdoc",
+			"query",
+			"bash",
+			"json",
+			"jsonc",
+			"yaml",
+			"toml",
 		},
 	})
 end
