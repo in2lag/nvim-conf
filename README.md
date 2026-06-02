@@ -170,6 +170,7 @@ new diagnostic on every keystroke.
 | `<leader>v`  | Paste from system clipboard                  |
 | `<leader>P`  | Paste over selection without losing yank     |
 | `<leader>x`  | Black-hole delete (no clobber of yank)       |
+| `<leader>w`  | Toggle line wrap (`:set wrap!`)              |
 
 ## Surround Pairs (`mini.surround`)
 
