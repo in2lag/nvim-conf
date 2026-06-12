@@ -2,7 +2,7 @@
 
 Personal Neovim setup. Built on Neovim 0.12+ using the built-in `vim.pack`
 package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
-`lua/ui`, and `lua/ai`.
+`lua/ui`, `lua/debug`, and `lua/ai`.
 
 ## Layout
 
@@ -16,8 +16,11 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── lsp.lua          LSP server config (vtsls, gopls, svelte)
 │   │   ├── options.lua      Global opts (indent=2, termguicolors, listchars)
 │   │   └── treesitter.lua   tree-sitter-manager + parser list
+│   ├── debug/
+│   │   └── dap.lua          nvim-dap + dap-ui (Go via delve, JS/TS via vscode-js-debug)
 │   ├── ui/
 │   │   ├── completion.lua   blink.cmp (LSP, buffer, path, snippets)
+│   │   ├── cursorline.lua   Cursorline only in focused window, outside insert
 │   │   ├── diagnostics.lua  vim.diagnostic config + keymaps
 │   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)
 │   │   ├── git.lua          gitsigns + diffview (tuned theme, q-close)
@@ -48,32 +51,36 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
    start via `tree-sitter-manager`. `.jsonc` files reuse the `json`
    parser via `vim.treesitter.language.register`.
 4. Run `:Copilot auth` once to authorize GitHub Copilot.
-5. The leader key is `<Space>`.
+5. Optional, for debugging: Go needs `dlv` on `$PATH`; JS/TS needs
+   Microsoft's `vscode-js-debug` installed manually so that
+   `~/.local/share/nvim/js-debug/src/dapDebugServer.js` exists.
+6. The leader key is `<Space>`.
 
 ## At a Glance
 
-| Area              | Plugin / Mechanism                       |
-| ----------------- | ---------------------------------------- |
-| Package manager   | `vim.pack` (built-in, Neovim 0.12+)      |
-| Theme             | `catppuccin/nvim` (Frappé flavour)       |
-| Fuzzy finder      | `telescope.nvim` + `plenary.nvim`        |
-| File tree         | `nvim-tree.lua` + `nvim-web-devicons`    |
-| Git: signs        | `gitsigns.nvim`                          |
-| Git: diff view    | `diffview.nvim`                          |
-| LSP               | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte` |
-| Tree-sitter       | `tree-sitter-manager.nvim`               |
-| Completion menu   | `blink.cmp` (Lua fuzzy matcher)          |
-| AI suggestions    | `copilot.lua` (ghost text)               |
-| Peek / preview    | `goto-preview`                           |
-| Sessions          | `auto-session` (per-cwd auto save)       |
-| Formatter         | `conform.nvim`                           |
-| Leader hints      | `which-key.nvim`                         |
-| Markdown preview  | `render-markdown.nvim` (in-buffer)       |
-| Rainbow brackets  | `rainbow-delimiters.nvim` (tree-sitter)  |
-| Statusline        | `mini.statusline` (from `mini.nvim`)     |
-| Surround pairs    | `mini.surround` (from `mini.nvim`)       |
-| Auto-pairs        | `mini.pairs` (from `mini.nvim`)          |
-| Indent scope      | `mini.indentscope` (from `mini.nvim`)    |
+| Area             | Plugin / Mechanism                                      |
+| ---------------- | ------------------------------------------------------- |
+| Package manager  | `vim.pack` (built-in, Neovim 0.12+)                     |
+| Theme            | `catppuccin/nvim` (Frappé flavour)                      |
+| Fuzzy finder     | `telescope.nvim` + `plenary.nvim`                       |
+| File tree        | `nvim-tree.lua` + `nvim-web-devicons`                   |
+| Git: signs       | `gitsigns.nvim`                                         |
+| Git: diff view   | `diffview.nvim`                                         |
+| LSP              | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte`           |
+| Debugging        | `nvim-dap` + `nvim-dap-ui`, `nvim-dap-go`, virtual text |
+| Tree-sitter      | `tree-sitter-manager.nvim`                              |
+| Completion menu  | `blink.cmp` (Lua fuzzy matcher)                         |
+| AI suggestions   | `copilot.lua` (ghost text)                              |
+| Peek / preview   | `goto-preview`                                          |
+| Sessions         | `auto-session` (per-cwd auto save)                      |
+| Formatter        | `conform.nvim`                                          |
+| Leader hints     | `which-key.nvim`                                        |
+| Markdown preview | `render-markdown.nvim` (in-buffer)                      |
+| Rainbow brackets | `rainbow-delimiters.nvim` (tree-sitter)                 |
+| Statusline       | `mini.statusline` (from `mini.nvim`)                    |
+| Surround pairs   | `mini.surround` (from `mini.nvim`)                      |
+| Auto-pairs       | `mini.pairs` (from `mini.nvim`)                         |
+| Indent scope     | `mini.indentscope` (from `mini.nvim`)                   |
 
 ## Completion & AI Keymaps
 
@@ -83,18 +90,18 @@ window, Copilot is inline virt_text, so they don't fight for the same space.
 The first menu item is preselected (highlighted but not inserted) so `<Tab>`
 always has a target.
 
-| Key                | Action                                                       |
-| ------------------ | ------------------------------------------------------------ |
-| `<Tab>`            | Accept menu item → jump snippet → accept Copilot → real tab  |
-| `<S-Tab>`          | Jump snippet backward → select previous menu item            |
-| `<CR>`             | Accept selected menu item                                    |
-| `<C-n>` / `<C-p>`  | Cycle menu next / prev                                       |
-| `<Esc>`            | Hide menu (stay in insert; Copilot ghost text stays)         |
-| `<C-e>`            | Cancel menu                                                  |
-| `<M-l>`            | Always-on Copilot accept                                     |
-| `<M-Right>`        | Accept next word from Copilot                                |
-| `<M-]>` / `<M-[>`  | Cycle Copilot alternatives                                   |
-| `<C-]>`            | Dismiss Copilot ghost text                                   |
+| Key               | Action                                                      |
+| ----------------- | ----------------------------------------------------------- |
+| `<Tab>`           | Accept menu item → jump snippet → accept Copilot → real tab |
+| `<S-Tab>`         | Jump snippet backward → select previous menu item           |
+| `<CR>`            | Accept selected menu item                                   |
+| `<C-n>` / `<C-p>` | Cycle menu next / prev                                      |
+| `<Esc>`           | Hide menu (stay in insert; Copilot ghost text stays)        |
+| `<C-e>`           | Cancel menu                                                 |
+| `<M-l>`           | Always-on Copilot accept                                    |
+| `<M-Right>`       | Accept next word from Copilot                               |
+| `<M-]>` / `<M-[>` | Cycle Copilot alternatives                                  |
+| `<C-]>`           | Dismiss Copilot ghost text                                  |
 
 Copilot is enabled in `gitcommit` buffers — running `git commit` (no
 `-m`) opens nvim on `COMMIT_EDITMSG` with the staged diff visible as
@@ -105,15 +112,16 @@ Disabled in `gitrebase` and `help` to stay out of the way.
 
 Float window over the current buffer with the requested LSP info.
 
-| Key   | Action                                            |
-| ----- | ------------------------------------------------- |
-| `gpd` | Peek definition                                   |
-| `gpi` | Peek implementation                               |
-| `gpt` | Peek type definition                              |
-| `gpr` | Peek references (Telescope picker)                |
-| `gpc` | Close all peek windows                            |
-| `q` / `<Esc>` (in float) | Close the peek                     |
-| `<CR>` (in float)        | Promote peek to full buffer         |
+| Key               | Action                             |
+| ----------------- | ---------------------------------- |
+| `gpd`             | Peek definition                    |
+| `gpi`             | Peek implementation                |
+| `gpt`             | Peek type definition               |
+| `gpr`             | Peek references (Telescope picker) |
+| `gpc`             | Close all peek windows             |
+| `q` (in float)    | Close this peek window             |
+| `Q` (in float)    | Close all peek windows             |
+| `<CR>` (in float) | Promote peek to full buffer        |
 
 `svelte-language-server` runs on `.svelte` buffers so peek/refs work from
 inside Svelte components. `vtsls` is configured with `typescript-svelte-plugin`
@@ -146,45 +154,50 @@ LSP diagnostics render in three places, configured in `lua/ui/diagnostics.lua`:
   `DiagnosticChanged` autocmd triggers a synthetic `CursorMoved` so the
   blame re-evaluates as soon as the LSP catches up — no waiting for the
   next real cursor move.
+
 - **Float** (`<leader>cd`): full message with source, rounded border.
 
 `update_in_insert` is on — diagnostics refresh live while typing. LSP
 servers (vtsls, gopls) debounce publishing internally, so you don't see a
 new diagnostic on every keystroke.
 
-| Key          | Action                                     |
-| ------------ | ------------------------------------------ |
-| `]d` / `[d`  | Next / prev diagnostic (Neovim default)    |
-| `<C-W>d`     | Open diagnostic float (Neovim default)     |
-| `<leader>cd` | Open diagnostic float at cursor            |
-| `<leader>cq` | Project diagnostics in Telescope           |
+Document highlight: when the cursor rests on a symbol for `updatetime`
+(100 ms), all other references of that symbol in the buffer get a subtle
+highlight (`vim.lsp.buf.document_highlight`), cleared on cursor move.
+Enabled per buffer on `LspAttach` for servers that support it.
+
+| Key          | Action                                  |
+| ------------ | --------------------------------------- |
+| `]d` / `[d`  | Next / prev diagnostic (Neovim default) |
+| `<C-W>d`     | Open diagnostic float (Neovim default)  |
+| `<leader>cd` | Open diagnostic float at cursor         |
+| `<leader>cq` | Project diagnostics in Telescope        |
 
 ## Editing Keymaps
 
-| Key          | Action                                       |
-| ------------ | -------------------------------------------- |
-| `u`          | Undo (default)                               |
-| `U`          | Redo (replaces default "undo line")          |
-| `<leader>d`  | Duplicate line / selection                   |
-| `<leader>y`  | Yank to system clipboard                     |
-| `<leader>v`  | Paste from system clipboard                  |
-| `<leader>P`  | Paste over selection without losing yank     |
-| `<leader>x`  | Black-hole delete (no clobber of yank)       |
-| `<leader>w`  | Toggle line wrap (`:set wrap!`)              |
+| Key                       | Action                                             |
+| ------------------------- | -------------------------------------------------- |
+| `<leader>D`               | Duplicate line / selection                         |
+| `<leader>o` / `<leader>O` | Insert blank line(s) below / above (takes a count) |
+| `<leader>y`               | Yank to system clipboard                           |
+| `<leader>v`               | Paste from system clipboard                        |
+| `<leader>P`               | Paste over selection without losing yank           |
+| `<leader>x`               | Black-hole delete (no clobber of yank)             |
+| `L` / `H`                 | Next / previous buffer                             |
 
 ## Surround Pairs (`mini.surround`)
 
 Add, change, or delete surrounding characters (parens, quotes, tags, …)
 around a text object. Standard `mini.surround` `s`-prefix:
 
-| Key                       | Action                                          |
-| ------------------------- | ----------------------------------------------- |
-| `sa{motion}{char}`        | Surround **a**dd — e.g. `saiw)` wraps inner word in `()` |
-| `sd{char}`                | Surround **d**elete — e.g. `sd)` removes the surrounding `()` |
-| `sr{from}{to}`            | Surround **r**eplace — e.g. `sr"'` changes `"` to `'` |
-| `sf{char}` / `sF{char}`   | Find next / previous surrounding character      |
-| `sh{char}`                | Highlight the surrounding pair                  |
-| `sa` (in visual)          | Wrap current selection                          |
+| Key                     | Action                                                        |
+| ----------------------- | ------------------------------------------------------------- |
+| `sa{motion}{char}`      | Surround **a**dd — e.g. `saiw)` wraps inner word in `()`      |
+| `sd{char}`              | Surround **d**elete — e.g. `sd)` removes the surrounding `()` |
+| `sr{from}{to}`          | Surround **r**eplace — e.g. `sr"'` changes `"` to `'`         |
+| `sf{char}` / `sF{char}` | Find next / previous surrounding character                    |
+| `sh{char}`              | Highlight the surrounding pair                                |
+| `sa` (in visual)        | Wrap current selection                                        |
 
 Note: typing `s` alone (vim's substitute-character) now has a short
 timeout-len delay while `mini.surround` waits to see if you're starting
@@ -209,40 +222,40 @@ enough to disappear behind code. Disabled in `NvimTree`, `help`,
 
 ## Find / Search Keymaps (Telescope)
 
-| Key                  | Action                                       |
-| -------------------- | -------------------------------------------- |
-| `<leader><leader>`   | Find files                                   |
-| `<leader>ff`         | Find files                                   |
-| `<leader>p`          | Project text search (live grep)              |
-| `<leader>fg`         | Live grep                                    |
-| `<leader>b`          | Find buffer                                  |
-| `<leader>fb`         | Find buffer                                  |
-| `<leader>fr`         | Recent files                                 |
-| `<leader>sr`         | Search & replace word under cursor (in file) |
-| `<C-d>` / `dd` in buffers picker | Delete the highlighted buffer    |
+| Key                              | Action                                       |
+| -------------------------------- | -------------------------------------------- |
+| `<leader><leader>`               | Find files                                   |
+| `<leader>p`                      | Live grep the project                        |
+| `<leader>fb`                     | Find buffers                                 |
+| `<leader>sw`                     | Grep word under cursor (project-wide)        |
+| `<leader>sr`                     | Search & replace word under cursor (in file) |
+| `<C-d>` / `dd` in buffers picker | Delete the highlighted buffer                |
 
 `find_files` and `live_grep` include hidden files; `.git/` is excluded.
-`.gitignore` is honored via ripgrep's defaults.
+`.gitignore` is honored via ripgrep's defaults. Image files (`png`,
+`jpg`, `gif`, `svg`, `webp`, `ico`, …) are hidden from every picker via
+`file_ignore_patterns` in the Telescope defaults.
 
 ## File Tree
 
 `nvim-tree` opens on the left at 50 columns. The `.git/` directory is
 filtered out of the listing.
 
-| Key          | Action                                              |
-| ------------ | --------------------------------------------------- |
-| `<leader>e`  | Open tree → focus tree → jump back to code (toggle) |
-| `<leader>E`  | Toggle tree sidebar (plain open/close)              |
+| Key         | Action                                              |
+| ----------- | --------------------------------------------------- |
+| `<leader>e` | Open tree → focus tree → jump back to code (toggle) |
+| `<leader>E` | Toggle tree sidebar (plain open/close)              |
 
 ## Git Keymaps
 
-| Key          | Action                                       |
-| ------------ | -------------------------------------------- |
-| `]c` / `[c`  | Next / previous hunk (gitsigns)              |
-| `<leader>gp` | Inline preview of the current hunk           |
-| `<leader>gd` | Toggle Diffview (open / close)               |
-| `<leader>gr` (in Diffview) | Revert file to base                |
-| `q` (in Diffview) | Close Diffview                          |
+| Key                        | Action                              |
+| -------------------------- | ----------------------------------- |
+| `]c` / `[c`                | Next / previous hunk (gitsigns)     |
+| `<leader>gp`               | Inline preview of the current hunk  |
+| `<leader>gd`               | Toggle Diffview (open / close)      |
+| `<leader>gr` (in Diffview) | Revert file to base                 |
+| `<leader>gf` (in Diffview) | Open file in editor, close Diffview |
+| `q` (in Diffview)          | Close Diffview                      |
 
 Inline blame is on with `delay = 0` — the author, commit time, and
 summary appear at end of line as soon as the cursor lands, with no
@@ -254,6 +267,36 @@ diagnostic to avoid the two fighting for the same eol slot.
 `lua/ui/git.lua` with muted Frappé-tinted backgrounds so diffs read
 quietly — the inline word-diff (`DiffText`) is a slightly brighter green
 than `DiffAdd` but no longer bold. Re-applied on every `ColorScheme`.
+
+## Debugging (nvim-dap)
+
+`nvim-dap` with `nvim-dap-ui` (opens automatically on launch/attach,
+closes when the session ends) and `nvim-dap-virtual-text` for inline
+variable values. Configured in `lua/debug/dap.lua`.
+
+Adapters:
+
+- **Go** — `nvim-dap-go` wraps Delve (`dlv` on `$PATH`); includes
+  debug-nearest-test and attach.
+- **JS / TS / Svelte** — Microsoft's `vscode-js-debug` (`pwa-node`,
+  `pwa-chrome`), expected under `~/.local/share/nvim/js-debug/`. Launch
+  current file with Node, attach to a process, or launch Chrome against
+  `localhost:5173` (Vite/Svelte dev server).
+
+| Key          | Action                    |
+| ------------ | ------------------------- |
+| `<leader>db` | Toggle breakpoint         |
+| `<leader>dB` | Conditional breakpoint    |
+| `<leader>dc` | Continue / start          |
+| `<leader>do` | Step over                 |
+| `<leader>di` | Step into                 |
+| `<leader>dO` | Step out                  |
+| `<leader>dl` | Run last                  |
+| `<leader>dr` | Toggle REPL               |
+| `<leader>du` | Toggle DAP UI             |
+| `<leader>de` | Evaluate expression (n/v) |
+| `<leader>dq` | Terminate session         |
+| `<leader>dt` | Debug nearest Go test     |
 
 ## Editor Defaults
 
@@ -267,6 +310,10 @@ Set in `lua/core/options.lua`:
   `title` + `titlestring`.
 - `signcolumn = "yes:2"` so gitsigns and diagnostic signs each get a cell.
 - `scrollopt = "ver,jump"` so Diffview's two windows stay synced vertically.
+- `updatetime = 100` so `CursorHold` fires quickly (drives the LSP
+  document highlight).
+- Cursorline only in the focused window and outside insert mode
+  (`lua/ui/cursorline.lua`), highlighting both the line and its number.
 - `cmdheight = 0` so the cmdline row collapses when idle; `:`/`/` still
   bring it up, and `:messages` recalls anything that flashed by.
 - Domain-specific opts (search case, completion popup, line numbers)
@@ -291,9 +338,9 @@ colored too: unchecked is yellow, checked is green. Inline link labels are
 underlined; the per-domain link icons (Google, GitHub, etc.) are disabled
 so labels read cleanly.
 
-| Key          | Action                       |
-| ------------ | ---------------------------- |
-| `<leader>mp` | Toggle Markdown rendering    |
+| Key          | Action                    |
+| ------------ | ------------------------- |
+| `<leader>mp` | Toggle Markdown rendering |
 
 `blink.cmp` is disabled in markdown buffers so the completion menu doesn't
 fight with the prose flow. Copilot ghost text still works, and `<Tab>` is
@@ -324,7 +371,7 @@ adding more modules later.
 
 `auto-session` saves on `:qa` per `cwd` and restores on entry when launched
 without arguments. The previous active buffer list, splits, and cursor
-positions come back; buffer-local options are *not* saved (so global
+positions come back; buffer-local options are _not_ saved (so global
 settings like indent width always win). The tree closes before save so the
 layout doesn't carry a stale tree window. Suppressed for `~/`,
 `~/Downloads`, `~/Desktop`, and `/`.

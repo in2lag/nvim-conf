@@ -9,8 +9,10 @@ function M.setup()
 			{ "<leader>g", group = "git" },
 			{ "<leader>f", group = "find" },
 			{ "<leader>c", group = "code" },
+			{ "<leader>d", group = "debug" },
 			{ "<leader>s", group = "search" },
 			{ "<leader>m", group = "markdown" },
+			{ "s", group = "surround" },
 		},
 	})
 end

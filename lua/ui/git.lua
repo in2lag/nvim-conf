@@ -46,6 +46,16 @@ function M.setup()
 		end,
 	})
 
+	local function goto_file_and_close()
+		local lib = require("diffview.lib")
+		local view = lib.get_current_view()
+		require("diffview.actions").goto_file_edit()
+		if view then
+			view:close()
+			lib.dispose_view(view)
+		end
+	end
+
 	require("diffview").setup({
 		enhanced_diff_hl = true,
 		view = {
@@ -81,6 +91,12 @@ function M.setup()
 					"<leader>gr",
 					require("diffview.actions").restore_entry,
 					{ buffer = true, desc = "Revert File" }
+				)
+				vim.keymap.set(
+					"n",
+					"<leader>gf",
+					goto_file_and_close,
+					{ buffer = true, desc = "Go to File & Close Diffview" }
 				)
 			end,
 			view_opened = function()
@@ -160,6 +176,12 @@ function M.setup()
 				"<leader>gr",
 				require("diffview.actions").restore_entry,
 				{ buffer = args.buf, desc = "Revert File" }
+			)
+			vim.keymap.set(
+				"n",
+				"<leader>gf",
+				goto_file_and_close,
+				{ buffer = args.buf, desc = "Go to File & Close Diffview" }
 			)
 		end,
 	})

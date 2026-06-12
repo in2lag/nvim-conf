@@ -11,10 +11,17 @@ function M.setup()
 	map("n", "N", "Nzzzv", { desc = "Prev result (centered)" })
 	-- Quick Search and Replace
 	map("n", "<leader>sr", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search and Replace" })
+	map("n", "<leader>sw", "<cmd>Telescope grep_string<CR>", { desc = "Grep word under cursor" })
 
 	local actions = require("telescope.actions")
 	require("telescope").setup({
 		defaults = {
+			file_ignore_patterns = {
+				"%.git/",
+				-- Image files
+				"%.png$", "%.jpe?g$", "%.gif$", "%.bmp$", "%.webp$",
+				"%.svg$", "%.ico$", "%.tiff?$", "%.heic$", "%.avif$",
+			},
 			vimgrep_arguments = {
 				"rg",
 				"--color=never",
@@ -30,7 +37,6 @@ function M.setup()
 		pickers = {
 			find_files = {
 				hidden = true,
-				file_ignore_patterns = { "%.git/" },
 			},
 			buffers = {
 				mappings = {

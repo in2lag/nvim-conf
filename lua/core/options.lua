@@ -17,4 +17,6 @@ vim.opt.scrollopt = "ver,jump"
 
 vim.opt.cmdheight = 0
 
+vim.opt.updatetime = 100
+
 return {}

@@ -20,6 +20,11 @@ vim.pack.add({
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
+	{ src = "https://github.com/mfussenegger/nvim-dap" },
+	{ src = "https://github.com/nvim-neotest/nvim-nio" },
+	{ src = "https://github.com/rcarriga/nvim-dap-ui" },
+	{ src = "https://github.com/theHamsta/nvim-dap-virtual-text" },
+	{ src = "https://github.com/leoluz/nvim-dap-go" },
 })
 
 if vim.loader then
@@ -35,6 +40,7 @@ require("ui.search")
 require("ui.session")
 require("ui.tree")
 require("ui.numbers")
+require("ui.cursorline")
 require("ui.whichkey")
 require("ui.format")
 require("ui.completion")
@@ -45,6 +51,7 @@ require("ui.surround")
 require("ui.pairs")
 require("ui.indent")
 require("ui.markdown")
+require("debug.dap")
 require("ai.copilot")
 require("catppuccin").setup({ flavour = "frappe" })
 
