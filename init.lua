@@ -20,6 +20,7 @@ vim.pack.add({
 	{ src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
+	{ src = "https://github.com/sphamba/smear-cursor.nvim" },
 	{ src = "https://github.com/mfussenegger/nvim-dap" },
 	{ src = "https://github.com/nvim-neotest/nvim-nio" },
 	{ src = "https://github.com/rcarriga/nvim-dap-ui" },
@@ -50,6 +51,7 @@ require("ui.statusline")
 require("ui.surround")
 require("ui.pairs")
 require("ui.indent")
+require("ui.smear")
 require("ui.markdown")
 require("debug.dap")
 require("ai.copilot")

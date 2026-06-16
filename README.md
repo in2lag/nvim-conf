@@ -31,6 +31,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── peek.lua         goto-preview (peek defs/refs in a float)
 │   │   ├── search.lua       Search behavior + replace shortcut
 │   │   ├── session.lua      auto-session (per-cwd session restore)
+│   │   ├── smear.lua        smear-cursor.nvim (animated cursor smear)
 │   │   ├── statusline.lua   mini.statusline (global laststatus=3)
 │   │   ├── surround.lua     mini.surround (sa/sd/sr text-object pairs)
 │   │   ├── tree.lua         nvim-tree with smart toggle
@@ -81,18 +82,20 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | Surround pairs   | `mini.surround` (from `mini.nvim`)                      |
 | Auto-pairs       | `mini.pairs` (from `mini.nvim`)                         |
 | Indent scope     | `mini.indentscope` (from `mini.nvim`)                   |
+| Cursor smear     | `smear-cursor.nvim`                                     |
 
 ## Completion & AI Keymaps
 
 `blink.cmp` drives the completion menu; `copilot.lua` shows full-line ghost
 text. Both render simultaneously (VSCode-style): the menu is a floating
 window, Copilot is inline virt_text, so they don't fight for the same space.
-The first menu item is preselected (highlighted but not inserted) so `<Tab>`
-always has a target.
+The first menu item is preselected (highlighted but not inserted). `<Tab>`
+prefers a visible Copilot suggestion; when Copilot has nothing it accepts the
+menu item, so use `<CR>` to take a menu item while Copilot is showing.
 
 | Key               | Action                                                      |
 | ----------------- | ----------------------------------------------------------- |
-| `<Tab>`           | Accept menu item → jump snippet → accept Copilot → real tab |
+| `<Tab>`           | Accept Copilot → accept menu item → jump snippet → real tab |
 | `<S-Tab>`         | Jump snippet backward → select previous menu item           |
 | `<CR>`            | Accept selected menu item                                   |
 | `<C-n>` / `<C-p>` | Cycle menu next / prev                                      |
@@ -220,6 +223,16 @@ enough to disappear behind code. Disabled in `NvimTree`, `help`,
 `markdown`, `terminal`, and Diffview buffers via a buffer-local
 `miniindentscope_disable` flag.
 
+## Cursor (`smear-cursor.nvim`)
+
+The cursor smears toward its target in real time (Neovide-style), making
+jumps easy to follow. Configured in `lua/ui/smear.lua`. `smear_insert_mode`
+is off so typing stays crisp — the smear only fires on navigation moves.
+Feel is tuned via `stiffness` / `trailing_stiffness` (lower = longer smear)
+and `damping`; `:SmearCursorToggle` turns it on/off live. If the smear
+glyphs look blocky, set `legacy_computing_symbols_support = true` (needs a
+font with octant/legacy-computing symbols).
+
 ## Find / Search Keymaps (Telescope)
 
 | Key                              | Action                                       |
@@ -227,7 +240,8 @@ enough to disappear behind code. Disabled in `NvimTree`, `help`,
 | `<leader><leader>`               | Find files                                   |
 | `<leader>p`                      | Live grep the project                        |
 | `<leader>fb`                     | Find buffers                                 |
-| `<leader>sw`                     | Grep word under cursor (project-wide)        |
+| `<leader>sw` (normal)            | Grep word under cursor (project-wide)        |
+| `<leader>sw` (visual)            | Grep the current selection (project-wide)    |
 | `<leader>sr`                     | Search & replace word under cursor (in file) |
 | `<C-d>` / `dd` in buffers picker | Delete the highlighted buffer                |
 
@@ -316,6 +330,8 @@ Set in `lua/core/options.lua`:
   (`lua/ui/cursorline.lua`), highlighting both the line and its number.
 - `cmdheight = 0` so the cmdline row collapses when idle; `:`/`/` still
   bring it up, and `:messages` recalls anything that flashed by.
+- `startofline = true` so line jumps (`gg`, `G`, `Ctrl-D`, etc.) land on
+  the first non-blank character of the target line.
 - Domain-specific opts (search case, completion popup, line numbers)
   live next to the feature they belong to under `lua/ui/`.
 

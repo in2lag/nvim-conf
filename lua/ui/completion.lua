@@ -8,8 +8,6 @@ function M.setup()
 		keymap = {
 			preset = "default",
 			["<Tab>"] = {
-				"select_and_accept",
-				"snippet_forward",
 				function()
 					local ok, copilot = pcall(require, "copilot.suggestion")
 					if ok and copilot.is_visible() then
@@ -17,6 +15,8 @@ function M.setup()
 						return true
 					end
 				end,
+				"select_and_accept",
+				"snippet_forward",
 				"fallback",
 			},
 			["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },

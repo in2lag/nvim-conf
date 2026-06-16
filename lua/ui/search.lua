@@ -12,6 +12,10 @@ function M.setup()
 	-- Quick Search and Replace
 	map("n", "<leader>sr", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search and Replace" })
 	map("n", "<leader>sw", "<cmd>Telescope grep_string<CR>", { desc = "Grep word under cursor" })
+	map("x", "<leader>sw", function()
+		local region = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
+		require("telescope.builtin").grep_string({ search = table.concat(region, "\n") })
+	end, { desc = "Grep selection" })
 
 	local actions = require("telescope.actions")
 	require("telescope").setup({
