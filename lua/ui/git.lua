@@ -101,7 +101,18 @@ function M.setup()
 			end,
 			view_opened = function()
 				vim.schedule(function()
-					vim.cmd("wincmd l")
+					-- Land in the right (new / working) diff pane: the window
+					-- furthest to the right in the layout.
+					local target, maxcol = nil, -1
+					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+						local col = vim.fn.win_screenpos(win)[2]
+						if col > maxcol then
+							maxcol, target = col, win
+						end
+					end
+					if target then
+						vim.api.nvim_set_current_win(target)
+					end
 					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
 						local buf = vim.api.nvim_win_get_buf(win)
 						pcall(
