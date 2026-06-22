@@ -12,8 +12,8 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 ├── nvim-pack-lock.json      vim.pack lockfile (pinned plugin revisions)
 ├── lua/
 │   ├── core/
-│   │   ├── keymaps.lua      Leader, clipboard, editing, smart Home
-│   │   ├── lsp.lua          LSP server config (vtsls, gopls, svelte)
+│   │   ├── keymaps.lua      Leader, clipboard, editing, save (Cmd+S), smart Home
+│   │   ├── lsp.lua          LSP server config (vtsls, gopls, svelte, angularls)
 │   │   ├── options.lua      Global opts (indent=2, termguicolors, listchars)
 │   │   └── treesitter.lua   tree-sitter-manager + parser list
 │   ├── debug/
@@ -46,16 +46,25 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 2. Launch `nvim`. `vim.pack` resolves plugins from `nvim-pack-lock.json` on
    first run and clones them into the pack directory.
 3. Tree-sitter parsers listed in `lua/core/treesitter.lua` (`typescript`,
-   `tsx`, `javascript`, `svelte`, `html`, `css`, `markdown`,
+   `tsx`, `javascript`, `svelte`, `angular`, `html`, `css`, `markdown`,
    `markdown_inline`, `go`, `gomod`, `gosum`, `gowork`, `lua`, `vim`,
    `vimdoc`, `query`, `bash`, `json`, `yaml`, `toml`) install on first
    start via `tree-sitter-manager`. `.jsonc` files reuse the `json`
-   parser via `vim.treesitter.language.register`.
+   parser via `vim.treesitter.language.register`; `*.component.html` files are
+   detected as the `htmlangular` filetype and highlighted with the `angular`
+   parser (see the Angular section).
 4. Run `:Copilot auth` once to authorize GitHub Copilot.
 5. Optional, for debugging: Go needs `dlv` on `$PATH`; JS/TS needs
    Microsoft's `vscode-js-debug` installed manually so that
    `~/.local/share/nvim/js-debug/src/dapDebugServer.js` exists.
 6. The leader key is `<Space>`.
+
+Plugins are pinned to **exact commit revisions** in both `init.lua` (each
+spec's `version = "<sha>"`) and `nvim-pack-lock.json`, so installs are
+reproducible across machines. To bump one: change its `version` in `init.lua`,
+`:restart`, then `:lua vim.pack.update({ '<name>' })` and confirm the preview
+buffer with `:write`. A plain `:lua vim.pack.update()` is otherwise a no-op
+since nothing floats.
 
 ## At a Glance
 
@@ -67,7 +76,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 | File tree        | `nvim-tree.lua` + `nvim-web-devicons`                   |
 | Git: signs       | `gitsigns.nvim`                                         |
 | Git: diff view   | `diffview.nvim`                                         |
-| LSP              | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte`           |
+| LSP              | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte`, `angularls` |
 | Debugging        | `nvim-dap` + `nvim-dap-ui`, `nvim-dap-go`, virtual text |
 | Tree-sitter      | `tree-sitter-manager.nvim`                              |
 | Completion menu  | `blink.cmp` (Lua fuzzy matcher)                         |
@@ -131,6 +140,31 @@ inside Svelte components. `vtsls` is configured with `typescript-svelte-plugin`
 as a global TS server plugin, so references on a TS symbol also surface
 usages from `.svelte` files. Both packages live in the global npm prefix.
 
+## Angular
+
+`angularls` (the Angular Language Service — install once with
+`npm i -g @angular/language-server`) provides template intelligence:
+completion, go-to-definition, and find-references for bindings/variables
+inside `.html` / `.component.html` templates, plus template diagnostics.
+
+It is restricted to the `html` and `htmlangular` filetypes in
+`lua/core/lsp.lua` and deliberately does **not** attach to `.ts` files.
+`vtsls` already owns those, and letting both attach doubles completions and
+diagnostics and breaks `goto-preview`: a references request fans out to every
+attached client, so `gpr` opened duplicate windows. The Angular server still
+reads the whole TypeScript project from disk, so template intelligence is
+unaffected — only inline templates written as a string inside a `.ts`
+component lose Angular-aware features (the TypeScript itself is still handled
+by `vtsls`).
+
+Template highlighting uses the `angular` tree-sitter parser:
+`*.component.html` is detected as the `htmlangular` filetype via
+`vim.filetype.add`, the parser is registered for it, and a `FileType` autocmd
+starts treesitter — needed because `tree-sitter-manager` keys its
+auto-highlight off parser names, not the `htmlangular` filetype. Templates are
+formatted with `prettier` via `conform.nvim` (the `htmlangular` filetype is
+mapped to prettier in `lua/ui/format.lua`).
+
 ## Diagnostics
 
 LSP diagnostics render in three places, configured in `lua/ui/diagnostics.lua`:
@@ -187,6 +221,12 @@ Enabled per buffer on `LspAttach` for servers that support it.
 | `<leader>P`               | Paste over selection without losing yank           |
 | `<leader>x`               | Black-hole delete (no clobber of yank)             |
 | `L` / `H`                 | Next / previous buffer                             |
+| `<D-s>` (Cmd+S)           | Save file — normal, insert, and visual modes       |
+
+`<D-s>` is Cmd+S: Ghostty forwards `Cmd+S` to nvim as `<D-s>` over the kitty
+keyboard protocol, and it's mapped with `<cmd>write` so it saves without
+leaving your current mode (you stay in insert / visual). Defined in
+`lua/core/keymaps.lua`.
 
 ## Surround Pairs (`mini.surround`)
 
@@ -320,7 +360,7 @@ Set in `lua/core/options.lua`:
 - `termguicolors` for true-color UI.
 - Gentle whitespace visualization via `list` + `listchars`:
   `›` for tabs, `·` for leading and trailing spaces, `␣` for non-breaking space.
-- Terminal/window title set to `nvim - <project>` (basename of `cwd`) via
+- Terminal/window title set to `<project> - nvim` (basename of `cwd`) via
   `title` + `titlestring`.
 - `signcolumn = "yes:2"` so gitsigns and diagnostic signs each get a cell.
 - `scrollopt = "ver,jump"` so Diffview's two windows stay synced vertically.
