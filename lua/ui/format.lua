@@ -55,6 +55,7 @@ function M.setup()
 			svelte = web,
 			vue = web,
 			html = { "prettier" },
+			htmlangular = { "prettier" },
 			css = { "prettier" },
 			scss = { "prettier" },
 			json = { "prettier" },

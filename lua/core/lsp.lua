@@ -45,6 +45,18 @@ function M.setup()
 	vim.lsp.config("svelte", {})
 	vim.lsp.enable("svelte")
 
+	-- Angular template intellisense: completion, go-to-definition and
+	-- find-references for variables/bindings inside .html / .component.html
+	-- templates. Restricted to template filetypes so it does NOT also attach to
+	-- .ts files -- otherwise vtsls + angularls both attach and the duplicate
+	-- clients double completions/diagnostics and break goto-preview (gpr).
+	-- The server still reads the whole .ts project from disk for template smarts.
+	-- Requires: npm install -g @angular/language-server
+	vim.lsp.config("angularls", {
+		filetypes = { "html", "htmlangular" },
+	})
+	vim.lsp.enable("angularls")
+
 	vim.lsp.config("gopls", {
 		before_init = function(_, config)
 			local prefix = go_module_prefix(config.root_dir)

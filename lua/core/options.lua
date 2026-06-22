@@ -9,7 +9,7 @@ vim.opt.list = true
 vim.opt.listchars = { tab = "› ", lead = "·", trail = "·", nbsp = "␣" }
 
 vim.opt.title = true
-vim.opt.titlestring = "nvim - %{fnamemodify(getcwd(), ':t')}"
+vim.opt.titlestring = "%{fnamemodify(getcwd(), ':t')} - nvim"
 
 vim.opt.signcolumn = "yes:2"
 

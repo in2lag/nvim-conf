@@ -8,6 +8,9 @@ map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
 -- [ General ]
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
+-- [ Save ] Cmd+S (Ghostty forwards super+s to nvim as <D-s>)
+map({ "n", "i", "v", "s" }, "<D-s>", "<cmd>write<CR>", { desc = "Save file" })
+
 -- [ Buffers ]
 map("n", "L", "<cmd>bnext<CR>", { desc = "Next buffer" })
 map("n", "H", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
