@@ -4,6 +4,7 @@ local map = vim.keymap.set
 map("n", "<leader><leader>", "<cmd>Telescope find_files<CR>", { desc = "Fuzzy find files" })
 map("n", "<leader>p", "<cmd>Telescope live_grep<CR>", { desc = "Live grep project" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
+map("n", "<leader>gs", "<cmd>Telescope git_status<CR>", { desc = "Git changed files" })
 
 -- [ General ]
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
