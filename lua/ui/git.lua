@@ -66,6 +66,24 @@ function M.setup()
 			listing_style = "tree",
 			win_config = { position = "left", width = 32 },
 		},
+		-- Set via diffview's keymaps config (not buffer-local maps in hooks) so
+		-- they are removed from the real file buffers when the view closes.
+		keymaps = {
+			view = {
+				{ "n", "q", "<cmd>DiffviewClose<CR>", { nowait = true, desc = "Close Diffview" } },
+				{ "n", "<leader>gs", require("diffview.actions").toggle_stage_entry, { desc = "Stage File" } },
+				{ "n", "<leader>gr", require("diffview.actions").restore_entry, { desc = "Revert File" } },
+				{ "n", "<leader>gf", goto_file_and_close, { desc = "Go to File & Close Diffview" } },
+			},
+			file_panel = {
+				{ "n", "q", "<cmd>DiffviewClose<CR>", { nowait = true, desc = "Close Diffview" } },
+				{ "n", "<leader>gr", require("diffview.actions").restore_entry, { desc = "Revert File" } },
+				{ "n", "<leader>gf", goto_file_and_close, { desc = "Go to File & Close Diffview" } },
+			},
+			file_history_panel = {
+				{ "n", "q", "<cmd>DiffviewClose<CR>", { nowait = true, desc = "Close Diffview" } },
+			},
+		},
 		hooks = {
 			diff_buf_win_enter = function(_, _, ctx)
 				if ctx.layout_name:match("^diff2") then
@@ -74,30 +92,6 @@ function M.setup()
 					vim.opt_local.cursorline = true
 					vim.opt_local.relativenumber = false
 				end
-				vim.keymap.set(
-					"n",
-					"q",
-					"<cmd>DiffviewClose<CR>",
-					{ buffer = true, nowait = true, desc = "Close Diffview" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>gs",
-					require("diffview.actions").toggle_stage_entry,
-					{ buffer = true, desc = "Stage File" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>gr",
-					require("diffview.actions").restore_entry,
-					{ buffer = true, desc = "Revert File" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>gf",
-					goto_file_and_close,
-					{ buffer = true, desc = "Go to File & Close Diffview" }
-				)
 			end,
 			view_opened = function()
 				vim.schedule(function()
@@ -112,16 +106,6 @@ function M.setup()
 					end
 					if target then
 						vim.api.nvim_set_current_win(target)
-					end
-					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-						local buf = vim.api.nvim_win_get_buf(win)
-						pcall(
-							vim.keymap.set,
-							"n",
-							"q",
-							"<cmd>DiffviewClose<CR>",
-							{ buffer = buf, nowait = true, desc = "Close Diffview" }
-						)
 					end
 				end)
 			end,
@@ -172,30 +156,6 @@ function M.setup()
 	end
 
 	vim.keymap.set("n", "<leader>gd", toggle_diffview, { desc = "Toggle Diffview" })
-
-	vim.api.nvim_create_autocmd("FileType", {
-		pattern = { "DiffviewFiles", "DiffviewFileHistory" },
-		callback = function(args)
-			vim.keymap.set(
-				"n",
-				"q",
-				"<cmd>DiffviewClose<CR>",
-				{ buffer = args.buf, nowait = true, desc = "Close Diffview" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>gr",
-				require("diffview.actions").restore_entry,
-				{ buffer = args.buf, desc = "Revert File" }
-			)
-			vim.keymap.set(
-				"n",
-				"<leader>gf",
-				goto_file_and_close,
-				{ buffer = args.buf, desc = "Go to File & Close Diffview" }
-			)
-		end,
-	})
 end
 
 M.setup()
