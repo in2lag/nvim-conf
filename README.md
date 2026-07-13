@@ -314,6 +314,8 @@ filtered out of the listing.
 | `]c` / `[c`                | Next / previous hunk (gitsigns)     |
 | `<leader>gp`               | Inline preview of the current hunk  |
 | `<leader>gs`               | Changed files in a snacks picker    |
+| `<leader>gh`               | All changed hunks in a snacks picker |
+| `<leader>go`               | Open file on remote in browser (visual: line range) |
 | `<leader>gd`               | Toggle Diffview (open / close)      |
 | `<leader>gr` (in Diffview) | Revert file to base                 |
 | `<leader>gf` (in Diffview) | Open file in editor, close Diffview |
