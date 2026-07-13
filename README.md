@@ -72,7 +72,7 @@ since nothing floats.
 | ---------------- | ------------------------------------------------------- |
 | Package manager  | `vim.pack` (built-in, Neovim 0.12+)                     |
 | Theme            | `catppuccin/nvim` (Frappé flavour)                      |
-| Fuzzy finder     | `telescope.nvim` + `plenary.nvim`                       |
+| Fuzzy finder     | `snacks.nvim` (picker module only)                      |
 | File tree        | `nvim-tree.lua` + `nvim-web-devicons`                   |
 | Git: signs       | `gitsigns.nvim`                                         |
 | Git: diff view   | `diffview.nvim`                                         |
@@ -129,7 +129,7 @@ Float window over the current buffer with the requested LSP info.
 | `gpd`             | Peek definition                    |
 | `gpi`             | Peek implementation                |
 | `gpt`             | Peek type definition               |
-| `gpr`             | Peek references (Telescope picker) |
+| `gpr`             | Peek references (snacks picker)    |
 | `gpc`             | Close all peek windows             |
 | `q` (in float)    | Close this peek window             |
 | `Q` (in float)    | Close all peek windows             |
@@ -208,7 +208,7 @@ Enabled per buffer on `LspAttach` for servers that support it.
 | `]d` / `[d`  | Next / prev diagnostic (Neovim default) |
 | `<C-W>d`     | Open diagnostic float (Neovim default)  |
 | `<leader>cd` | Open diagnostic float at cursor         |
-| `<leader>cq` | Project diagnostics in Telescope        |
+| `<leader>cq` | Project diagnostics in snacks picker    |
 
 ## Editing Keymaps
 
@@ -273,22 +273,22 @@ and `damping`; `:SmearCursorToggle` turns it on/off live. If the smear
 glyphs look blocky, set `legacy_computing_symbols_support = true` (needs a
 font with octant/legacy-computing symbols).
 
-## Find / Search Keymaps (Telescope)
+## Find / Search Keymaps (snacks picker)
 
-| Key                              | Action                                       |
-| -------------------------------- | -------------------------------------------- |
-| `<leader><leader>`               | Find files                                   |
-| `<leader>p`                      | Live grep the project                        |
-| `<leader>fb`                     | Find buffers                                 |
-| `<leader>sw` (normal)            | Grep word under cursor (project-wide)        |
-| `<leader>sw` (visual)            | Grep the current selection (project-wide)    |
-| `<leader>sr`                     | Search & replace word under cursor (in file) |
-| `<C-d>` / `dd` in buffers picker | Delete the highlighted buffer                |
+| Key                       | Action                                       |
+| ------------------------- | -------------------------------------------- |
+| `<leader><leader>`        | Find files                                   |
+| `<leader>p`               | Live grep the project                        |
+| `<leader>fb`              | Find buffers                                 |
+| `<leader>sw` (normal)     | Grep word under cursor (project-wide)        |
+| `<leader>sw` (visual)     | Grep the current selection (project-wide)    |
+| `<leader>sr`              | Search & replace word under cursor (in file) |
+| `dd` in buffers picker    | Delete the highlighted buffer                |
 
-`find_files` and `live_grep` include hidden files; `.git/` is excluded.
+The files and grep pickers include hidden files; `.git/` is excluded.
 `.gitignore` is honored via ripgrep's defaults. Image files (`png`,
-`jpg`, `gif`, `svg`, `webp`, `ico`, …) are hidden from every picker via
-`file_ignore_patterns` in the Telescope defaults.
+`jpg`, `gif`, `svg`, `webp`, `ico`, …) are excluded from the files and
+grep sources in the snacks picker config.
 
 ## File Tree
 
@@ -306,7 +306,7 @@ filtered out of the listing.
 | -------------------------- | ----------------------------------- |
 | `]c` / `[c`                | Next / previous hunk (gitsigns)     |
 | `<leader>gp`               | Inline preview of the current hunk  |
-| `<leader>gs`               | Changed files in a Telescope picker |
+| `<leader>gs`               | Changed files in a snacks picker    |
 | `<leader>gd`               | Toggle Diffview (open / close)      |
 | `<leader>gr` (in Diffview) | Revert file to base                 |
 | `<leader>gf` (in Diffview) | Open file in editor, close Diffview |

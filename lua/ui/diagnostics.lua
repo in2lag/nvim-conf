@@ -31,7 +31,9 @@ function M.setup()
 
 	local map = vim.keymap.set
 	map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-	map("n", "<leader>cq", "<cmd>Telescope diagnostics<CR>", { desc = "Project diagnostics" })
+	map("n", "<leader>cq", function()
+		Snacks.picker.diagnostics()
+	end, { desc = "Project diagnostics" })
 end
 
 M.setup()

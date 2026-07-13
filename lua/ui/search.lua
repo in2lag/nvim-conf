@@ -11,42 +11,22 @@ function M.setup()
 	map("n", "N", "Nzzzv", { desc = "Prev result (centered)" })
 	-- Quick Search and Replace
 	map("n", "<leader>sr", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Search and Replace" })
-	map("n", "<leader>sw", "<cmd>Telescope grep_string<CR>", { desc = "Grep word under cursor" })
-	map("x", "<leader>sw", function()
-		local region = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
-		require("telescope.builtin").grep_string({ search = table.concat(region, "\n") })
-	end, { desc = "Grep selection" })
+	-- grep_word greps the visual selection when invoked from visual mode
+	map({ "n", "x" }, "<leader>sw", function()
+		Snacks.picker.grep_word()
+	end, { desc = "Grep word/selection" })
 
-	local actions = require("telescope.actions")
-	require("telescope").setup({
-		defaults = {
-			file_ignore_patterns = {
-				"%.git/",
-				-- Image files
-				"%.png$", "%.jpe?g$", "%.gif$", "%.bmp$", "%.webp$",
-				"%.svg$", "%.ico$", "%.tiff?$", "%.heic$", "%.avif$",
-			},
-			vimgrep_arguments = {
-				"rg",
-				"--color=never",
-				"--no-heading",
-				"--with-filename",
-				"--line-number",
-				"--column",
-				"--smart-case",
-				"--hidden",
-				"--glob=!**/.git/*",
-			},
-		},
-		pickers = {
-			find_files = {
-				hidden = true,
-			},
-			buffers = {
-				mappings = {
-					i = { ["<C-d>"] = actions.delete_buffer },
-					n = { ["dd"] = actions.delete_buffer },
-				},
+	local exclude = {
+		".git",
+		-- Image files
+		"*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp",
+		"*.svg", "*.ico", "*.tif", "*.tiff", "*.heic", "*.avif",
+	}
+	require("snacks").setup({
+		picker = {
+			sources = {
+				files = { hidden = true, exclude = exclude },
+				grep = { hidden = true, exclude = exclude },
 			},
 		},
 	})

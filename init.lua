@@ -9,8 +9,7 @@ vim.pack.add({
 	{ src = "https://github.com/catppuccin/nvim", version = "426dbebe06b5c69fd846ceb17b42e12f890aedf1" },
 	{ src = "https://github.com/nvim-tree/nvim-tree.lua", version = "d277467fc0d1d0e2bca88165a1de6b526f9f6fe8" },
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons", version = "c72328a5494b4502947a022fe69c0c47e53b6aa6" },
-	{ src = "https://github.com/nvim-lua/plenary.nvim", version = "74b06c6c75e4eeb3108ec01852001636d85a932b" },
-	{ src = "https://github.com/nvim-telescope/telescope.nvim", version = "506338434fec5ad19cb1f8d45bf92d66c4917393" },
+	{ src = "https://github.com/folke/snacks.nvim", version = "e6fd58c82f2f3fcddd3fe81703d47d6d48fc7b9f" }, -- v2.31.0
 	{ src = "https://github.com/lewis6991/gitsigns.nvim", version = "6d808f99bd63303646794406e270bd553ad7792e" },
 	{ src = "https://github.com/sindrets/diffview.nvim", version = "4516612fe98ff56ae0415a259ff6361a89419b0a" },
 	{ src = "https://github.com/folke/which-key.nvim", version = "3aab2147e74890957785941f0c1ad87d0a44c15a" },

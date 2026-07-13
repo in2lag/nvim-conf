@@ -8,6 +8,7 @@ function M.setup()
 		height = 20,
 		border = "rounded",
 		resizing_mappings = false,
+		references = { provider = "snacks" },
 		post_open_hook = function(buf, _)
 			vim.keymap.set("n", "q", function()
 				pcall(vim.api.nvim_win_close, 0, false)
