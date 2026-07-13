@@ -277,13 +277,20 @@ font with octant/legacy-computing symbols).
 
 | Key                       | Action                                       |
 | ------------------------- | -------------------------------------------- |
-| `<leader><leader>`        | Find files                                   |
+| `<leader><leader>`        | Smart find files (frecency-sorted)           |
 | `<leader>p`               | Live grep the project                        |
 | `<leader>fb`              | Find buffers                                 |
 | `<leader>sw` (normal)     | Grep word under cursor (project-wide)        |
 | `<leader>sw` (visual)     | Grep the current selection (project-wide)    |
 | `<leader>sr`              | Search & replace word under cursor (in file) |
 | `dd` in buffers picker    | Delete the highlighted buffer                |
+
+`<leader><leader>` uses the snacks `smart` source: open buffers, recent
+files, and project files merged, deduplicated, and ranked by frecency
+with a bonus for the current working directory. Recently visited files
+from other projects may appear in the list (ranked low); add
+`smart = { filter = { cwd = true } }` to the picker sources to keep it
+project-local.
 
 The files and grep pickers include hidden files; `.git/` is excluded.
 `.gitignore` is honored via ripgrep's defaults. Image files (`png`,

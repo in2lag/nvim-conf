@@ -2,8 +2,8 @@ local map = vim.keymap.set
 
 -- [ The "Double Space" & Project Search ]
 map("n", "<leader><leader>", function()
-	Snacks.picker.files()
-end, { desc = "Fuzzy find files" })
+	Snacks.picker.smart()
+end, { desc = "Smart find files (frecency)" })
 map("n", "<leader>p", function()
 	Snacks.picker.grep()
 end, { desc = "Live grep project" })
