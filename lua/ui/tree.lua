@@ -40,8 +40,11 @@ function M.setup()
 	end, { desc = "Focus Tree or Jump Back to Code" })
 
 	-- 3. PLAIN TOGGLE
-	-- <leader>e is the "smart" focus cycle. <leader>E is a straight open/close.
-	vim.keymap.set("n", "<leader>E", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle Tree Sidebar" })
+	-- <leader>e is the "smart" focus cycle. <leader>E is a straight open/close
+	-- that leaves the cursor where it is.
+	vim.keymap.set("n", "<leader>E", function()
+		require("nvim-tree.api").tree.toggle({ focus = false })
+	end, { desc = "Toggle Tree Sidebar" })
 
 	-- 4. KEEP TREE PINNED TO LEFT (no horizontal scroll on long names)
 	vim.api.nvim_create_autocmd("FileType", {
