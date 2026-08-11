@@ -12,6 +12,7 @@ function M.setup()
 			{ "<leader>d", group = "debug" },
 			{ "<leader>s", group = "search" },
 			{ "<leader>m", group = "markdown" },
+			{ "<leader>n", group = "notify" },
 			{ "s", group = "surround" },
 		},
 	})

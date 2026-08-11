@@ -37,6 +37,7 @@ require("core.options")
 require("core.keymaps")
 require("core.treesitter")
 require("core.lsp")
+require("ui.snacks") -- must precede every Snacks consumer; owns the one setup() call
 require("ui.git")
 require("ui.search")
 require("ui.session")

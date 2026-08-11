@@ -15,21 +15,6 @@ function M.setup()
 	map({ "n", "x" }, "<leader>sw", function()
 		Snacks.picker.grep_word()
 	end, { desc = "Grep word/selection" })
-
-	local exclude = {
-		".git",
-		-- Image files
-		"*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp",
-		"*.svg", "*.ico", "*.tif", "*.tiff", "*.heic", "*.avif",
-	}
-	require("snacks").setup({
-		picker = {
-			sources = {
-				files = { hidden = true, exclude = exclude },
-				grep = { hidden = true, exclude = exclude },
-			},
-		},
-	})
 end
 M.setup()
 return M

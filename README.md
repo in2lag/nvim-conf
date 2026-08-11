@@ -31,6 +31,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── peek.lua         goto-preview (peek defs/refs in a float)
 │   │   ├── search.lua       Search behavior + replace shortcut
 │   │   ├── session.lua      auto-session (per-cwd session restore)
+│   │   ├── snacks.lua       The single Snacks.setup() (picker + notifier)
 │   │   ├── smear.lua        smear-cursor.nvim (animated cursor smear)
 │   │   ├── statusline.lua   mini.statusline (global laststatus=3)
 │   │   ├── surround.lua     mini.surround (sa/sd/sr text-object pairs)
@@ -54,10 +55,13 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
    detected as the `htmlangular` filetype and highlighted with the `angular`
    parser (see the Angular section).
 4. Run `:Copilot auth` once to authorize GitHub Copilot.
-5. Optional, for debugging: Go needs `dlv` on `$PATH`; JS/TS needs
+5. Install the language servers — or just start nvim and run
+   `:LspInstallMissing`, which installs whichever are absent for the currently
+   active Node/Go toolchain. See [LSP servers](#lsp-servers).
+6. Optional, for debugging: Go needs `dlv` on `$PATH`; JS/TS needs
    Microsoft's `vscode-js-debug` installed manually so that
    `~/.local/share/nvim/js-debug/src/dapDebugServer.js` exists.
-6. The leader key is `<Space>`.
+7. The leader key is `<Space>`.
 
 Plugins are pinned to **exact commit revisions** in both `init.lua` (each
 spec's `version = "<sha>"`) and `nvim-pack-lock.json`, so installs are
@@ -72,7 +76,8 @@ since nothing floats.
 | ---------------- | ------------------------------------------------------- |
 | Package manager  | `vim.pack` (built-in, Neovim 0.12+)                     |
 | Theme            | `catppuccin/nvim` (Frappé flavour)                      |
-| Fuzzy finder     | `snacks.nvim` (picker module only)                      |
+| Fuzzy finder     | `snacks.nvim` (picker module)                           |
+| Notifications    | `snacks.nvim` (notifier module, replaces `vim.notify`)  |
 | File tree        | `nvim-tree.lua` + `nvim-web-devicons`                   |
 | Git: signs       | `gitsigns.nvim`                                         |
 | Git: diff view   | `diffview.nvim`                                         |
@@ -139,6 +144,62 @@ Float window over the current buffer with the requested LSP info.
 inside Svelte components. `vtsls` is configured with `typescript-svelte-plugin`
 as a global TS server plugin, so references on a TS symbol also surface
 usages from `.svelte` files. Both packages live in the global npm prefix.
+
+Peek needs an attached server that supports the method. If none does, the
+keymaps report it through the notifier naming the method, filetype and attached
+clients, instead of letting `goto-preview` `print()` the failure — that reaches
+you as a bare `press ENTER` prompt under `cmdheight=0`. The usual cause is a
+language server missing from `$PATH`; see [LSP servers](#lsp-servers).
+
+## LSP servers
+
+| Server      | Executable     | Install                                                                     |
+| ----------- | -------------- | --------------------------------------------------------------------------- |
+| `vtsls`     | `vtsls`        | `npm i -g @vtsls/language-server typescript typescript-svelte-plugin`       |
+| `svelte`    | `svelteserver` | `npm i -g svelte-language-server`                                           |
+| `angularls` | `ngserver`     | `npm i -g @angular/language-server`                                         |
+| `gopls`     | `gopls`        | `go install golang.org/x/tools/gopls@latest`                                |
+
+`lua/core/lsp.lua` only calls `vim.lsp.enable()` for servers whose executable is
+actually on `$PATH`. Missing ones are collected and reported in a single startup
+notification naming them and the active `node`, and **`:LspInstallMissing`**
+reinstalls exactly those (npm packages batched into one `npm i -g`, `gopls` via
+`go install`) for the current toolchain. Restart with `:restart` afterwards.
+
+This exists because global npm binaries are **per-Node-version**. Switching Node
+— including `nvm alias default 22` silently following a newly installed 22.x —
+moves the global prefix out from under every `npm i -g` language server at once.
+The failure is near-silent: no client attaches, and LSP features report only
+"not supported by any server", which `cmdheight=0` reduces to a `press ENTER`
+prompt. `nvm install <ver> --reinstall-packages-from=<old>` avoids it when
+upgrading deliberately.
+
+For the same reason nothing here hardcodes a Node version: `vtsls`'s `tsdk` and
+the `typescript-svelte-plugin` location are resolved at startup from the `node`
+on `$PATH` (`lib/node_modules/<pkg>`, stat-checked) and omitted if absent,
+rather than pointing at a version-pinned path that a Node bump invalidates.
+
+## Notifications
+
+`snacks.notifier` takes over `vim.notify`, rendering messages as floating toasts
+in the bottom-right. This is load-bearing rather than cosmetic: `cmdheight = 0`
+leaves no cmdline row, so every `vim.notify` — LSP errors, plugin warnings —
+previously became a `press ENTER to continue` prompt whose text was never shown.
+
+| Key           | Action                 |
+| ------------- | ---------------------- |
+| `<leader>nh`  | Notification history   |
+| `<leader>nd`  | Dismiss all toasts     |
+
+History keeps everything, including toasts that timed out unseen. Note that
+messages written with `print()` or `:echo` still bypass `vim.notify` and can
+produce the prompt; `lua/ui/peek.lua` works around one such case in
+`goto-preview`.
+
+`Snacks.setup()` may only be called **once** — a second call errors with
+"snacks.nvim is already setup" and drops that config. All snacks modules are
+therefore configured in `lua/ui/snacks.lua`, which `init.lua` requires before
+any module that uses the `Snacks` global; feature modules only consume it.
 
 ## Angular
 
@@ -295,7 +356,7 @@ project-local.
 The files and grep pickers include hidden files; `.git/` is excluded.
 `.gitignore` is honored via ripgrep's defaults. Image files (`png`,
 `jpg`, `gif`, `svg`, `webp`, `ico`, …) are excluded from the files and
-grep sources in the snacks picker config.
+grep sources in the snacks picker config (`lua/ui/snacks.lua`).
 
 ## File Tree
 
