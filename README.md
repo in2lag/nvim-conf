@@ -282,11 +282,15 @@ Enabled per buffer on `LspAttach` for servers that support it.
 | `<leader>P`               | Paste over selection without losing yank           |
 | `<leader>x`               | Black-hole delete (no clobber of yank)             |
 | `L` / `H`                 | Next / previous buffer                             |
-| `<D-s>` (Cmd+S)           | Save file — normal, insert, and visual modes       |
+| `<D-s>` (Cmd+S)           | Save file and return to normal mode                |
 
 `<D-s>` is Cmd+S: Ghostty forwards `Cmd+S` to nvim as `<D-s>` over the kitty
-keyboard protocol, and it's mapped with `<cmd>write` so it saves without
-leaving your current mode (you stay in insert / visual). Defined in
+keyboard protocol. It is mapped in normal, insert and visual modes as
+`<Esc><cmd>write<CR>`, so saving from insert or visual always lands you in
+normal mode — no separate `<Esc>` afterwards. `conform`'s `format_on_save` is
+synchronous, so leaving insert first also keeps formatting from fighting the
+cursor. As with any `<Esc>`, exiting insert moves the cursor one column left;
+normal mode cannot hold a position past the last character. Defined in
 `lua/core/keymaps.lua`.
 
 ## Surround Pairs (`mini.surround`)

@@ -25,7 +25,11 @@ end, { desc = "Open file on remote (git)" })
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
 -- [ Save ] Cmd+S (Ghostty forwards super+s to nvim as <D-s>)
-map({ "n", "i", "v", "s" }, "<D-s>", "<cmd>write<CR>", { desc = "Save file" })
+-- <Esc> first so saving always lands in normal mode; conform's format_on_save is
+-- synchronous, and formatting a buffer that is still in insert mode fights the
+-- cursor. Leaving insert clamps the cursor one column left exactly as a manual
+-- <Esc> does -- normal mode cannot hold a position past the last character.
+map({ "n", "i", "v", "s" }, "<D-s>", "<Esc><cmd>write<CR>", { desc = "Save file (return to normal mode)" })
 
 -- [ Buffers ]
 map("n", "L", "<cmd>bnext<CR>", { desc = "Next buffer" })
