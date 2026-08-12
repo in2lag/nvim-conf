@@ -33,7 +33,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── session.lua      auto-session (per-cwd session restore)
 │   │   ├── snacks.lua       The single Snacks.setup() (picker + notifier)
 │   │   ├── smear.lua        smear-cursor.nvim (animated cursor smear)
-│   │   ├── statusline.lua   mini.statusline (global laststatus=3)
+│   │   ├── statusline.lua   mini.statusline (dim path, bold filename)
 │   │   ├── surround.lua     mini.surround (sa/sd/sr text-object pairs)
 │   │   ├── tree.lua         nvim-tree with smart toggle
 │   │   └── whichkey.lua     which-key prompt for leader bindings
@@ -481,14 +481,38 @@ via `conform.nvim` on save.
 
 ## Statusline
 
-`mini.statusline` (from `mini.nvim`) — global statusline
-(`laststatus = 3`, one bar across all splits) with a custom
-`content.active` that trims the default to: mode, git branch + diff,
-diagnostic counts (from the same `vim.diagnostic` config as the gutter),
-LSP servers, filename + modified flag, search count, filetype (icon via
-`nvim-web-devicons`), and a compact `line:col` location. Encoding,
-fileformat, file size, and percentage-through-file are removed to keep
-the bar quiet.
+`mini.statusline` (from `mini.nvim`) with a custom `content.active` that trims
+the default to: mode, diagnostic counts (from the same `vim.diagnostic` config
+as the gutter), LSP servers, the filename, search count, filetype (icon via
+`nvim-web-devicons`), and a compact `line:col` location. Encoding, fileformat,
+file size, and percentage-through-file are removed to keep the bar quiet. One
+bar per window (`laststatus = 2`, set by `mini.statusline` itself).
+
+Git branch and diff summary are deliberately absent — they crowded out the
+filename, which is the thing worth reading. `gitsigns` still shows per-line
+state in the gutter, and `titlestring` carries the cwd (worktree) name.
+
+**Filename rendering.** The path is always cwd-relative, with the directories
+dimmed (`StatuslineFileDir`) and the basename bold and brighter
+(`StatuslineFileTail`), so your eye lands on the file you are in:
+
+```
+ Normal  󰰎 ++  packages/logger/src/index.ts        typescript   1:1
+                └──── dimmed ────┘└─ bold ─┘
+```
+
+Below 100 columns it collapses to the basename alone (`index.ts`).
+
+This replaces `mini.statusline`'s `section_filename`, which switches to `%F` —
+the **absolute** path — once the window reaches `trunc_width`, so a wider window
+produced a *longer* path (75+ characters in a nested worktree), buried the
+basename at the far right, and repeated the branch name. Two implementation
+details matter if you edit it: `combine_groups` pads every group with a space on
+each side, so the two halves of the path cannot be separate groups without a gap
+appearing mid-path — `filename_section` returns one string carrying its own
+`%#hl#` switches, and doubles any literal `%`. The two highlight groups are
+derived from `Comment` and `Normal` and rebuilt on `ColorScheme`, because
+`init.lua` applies the colorscheme *after* this module loads.
 
 Paired with `cmdheight = 0` (see Editor Defaults), the statusline sits
 flush against the bottom edge — no dead cmdline row beneath.
