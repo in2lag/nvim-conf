@@ -46,72 +46,6 @@ function M.setup()
 		end,
 	})
 
-	local function goto_file_and_close()
-		local lib = require("diffview.lib")
-		local view = lib.get_current_view()
-		require("diffview.actions").goto_file_edit()
-		if view then
-			view:close()
-			lib.dispose_view(view)
-		end
-	end
-
-	require("diffview").setup({
-		enhanced_diff_hl = true,
-		view = {
-			default = { layout = "diff2_horizontal", disable_diagnostics = true, winbar_info = true },
-			file_history = { layout = "diff2_horizontal", disable_diagnostics = true, winbar_info = true },
-		},
-		file_panel = {
-			listing_style = "tree",
-			win_config = { position = "left", width = 32 },
-		},
-		-- Set via diffview's keymaps config (not buffer-local maps in hooks) so
-		-- they are removed from the real file buffers when the view closes.
-		keymaps = {
-			view = {
-				{ "n", "q", "<cmd>DiffviewClose<CR>", { nowait = true, desc = "Close Diffview" } },
-				{ "n", "<leader>gs", require("diffview.actions").toggle_stage_entry, { desc = "Stage File" } },
-				{ "n", "<leader>gr", require("diffview.actions").restore_entry, { desc = "Revert File" } },
-				{ "n", "<leader>gf", goto_file_and_close, { desc = "Go to File & Close Diffview" } },
-			},
-			file_panel = {
-				{ "n", "q", "<cmd>DiffviewClose<CR>", { nowait = true, desc = "Close Diffview" } },
-				{ "n", "<leader>gr", require("diffview.actions").restore_entry, { desc = "Revert File" } },
-				{ "n", "<leader>gf", goto_file_and_close, { desc = "Go to File & Close Diffview" } },
-			},
-			file_history_panel = {
-				{ "n", "q", "<cmd>DiffviewClose<CR>", { nowait = true, desc = "Close Diffview" } },
-			},
-		},
-		hooks = {
-			diff_buf_win_enter = function(_, _, ctx)
-				if ctx.layout_name:match("^diff2") then
-					vim.opt_local.signcolumn = "no"
-					vim.opt_local.foldcolumn = "0"
-					vim.opt_local.cursorline = true
-					vim.opt_local.relativenumber = false
-				end
-			end,
-			view_opened = function()
-				vim.schedule(function()
-					-- Land in the right (new / working) diff pane: the window
-					-- furthest to the right in the layout.
-					local target, maxcol = nil, -1
-					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-						local col = vim.fn.win_screenpos(win)[2]
-						if col > maxcol then
-							maxcol, target = col, win
-						end
-					end
-					if target then
-						vim.api.nvim_set_current_win(target)
-					end
-				end)
-			end,
-		},
-	})
-
 	local function apply_diff_hl()
 		local bg = "#363a4a"
 		local add_bg = "#2c3a2e"
@@ -121,15 +55,6 @@ function M.setup()
 		vim.api.nvim_set_hl(0, "DiffDelete", { bg = del_bg, fg = "#737994" })
 		vim.api.nvim_set_hl(0, "DiffChange", { bg = bg })
 		vim.api.nvim_set_hl(0, "DiffText", { bg = txt_add })
-		vim.api.nvim_set_hl(0, "DiffviewDiffAddAsDelete", { bg = del_bg })
-		vim.api.nvim_set_hl(0, "DiffviewDiffDelete", { fg = "#51576d", bg = "NONE" })
-		vim.api.nvim_set_hl(0, "DiffviewStatusModified", { fg = "#e5c890", bold = true })
-		vim.api.nvim_set_hl(0, "DiffviewStatusAdded", { fg = "#a6d189", bold = true })
-		vim.api.nvim_set_hl(0, "DiffviewStatusDeleted", { fg = "#e78284", bold = true })
-		vim.api.nvim_set_hl(0, "DiffviewStatusRenamed", { fg = "#8caaee", bold = true })
-		vim.api.nvim_set_hl(0, "DiffviewStatusUnmerged", { fg = "#ca9ee6", bold = true })
-		vim.api.nvim_set_hl(0, "DiffviewFilePanelTitle", { fg = "#ef9f76", bold = true })
-		vim.api.nvim_set_hl(0, "DiffviewFilePanelCounter", { fg = "#e5c890", bold = true })
 		vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", { fg = "#949cbb", italic = true })
 	end
 	apply_diff_hl()
@@ -146,16 +71,12 @@ function M.setup()
 		end,
 	})
 
-	local function toggle_diffview()
-		local lib = require("diffview.lib")
-		if lib.get_current_view() then
-			vim.cmd("DiffviewClose")
-		else
-			vim.cmd("DiffviewOpen")
-		end
-	end
-
-	vim.keymap.set("n", "<leader>gd", toggle_diffview, { desc = "Toggle Diffview" })
+	-- lazygit in a float, via snacks: staging, commits, rebases, stash, log.
+	-- snacks themes it from the colorscheme and sets os.editPreset = "nvim-remote",
+	-- so pressing `e` on a file opens it in THIS nvim instead of nesting a new one.
+	vim.keymap.set("n", "<leader>gd", function()
+		Snacks.lazygit()
+	end, { desc = "Lazygit" })
 end
 
 M.setup()

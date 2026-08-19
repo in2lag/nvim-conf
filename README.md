@@ -23,7 +23,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── cursorline.lua   Cursorline only in focused window, outside insert
 │   │   ├── diagnostics.lua  vim.diagnostic config + keymaps
 │   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)
-│   │   ├── git.lua          gitsigns + diffview (tuned theme, q-close)
+│   │   ├── git.lua          gitsigns + lazygit float (tuned diff theme)
 │   │   ├── indent.lua       mini.indentscope (animated scope guide)
 │   │   ├── markdown.lua     render-markdown.nvim (in-buffer preview)
 │   │   ├── numbers.lua      Hybrid line numbers + custom statuscolumn
@@ -80,7 +80,7 @@ since nothing floats.
 | Notifications    | `snacks.nvim` (notifier module, replaces `vim.notify`)  |
 | File tree        | `nvim-tree.lua` + `nvim-web-devicons`                   |
 | Git: signs       | `gitsigns.nvim`                                         |
-| Git: diff view   | `diffview.nvim`                                         |
+| Git: full UI     | `lazygit` in a float (via `snacks.lazygit`)             |
 | LSP              | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte`, `angularls` |
 | Debugging        | `nvim-dap` + `nvim-dap-ui`, `nvim-dap-go`, virtual text |
 | Tree-sitter      | `tree-sitter-manager.nvim`                              |
@@ -340,7 +340,7 @@ animated linearly over 80 ms on scope changes. Colored Frappé
 a quiet mauve (`#82768e`, mauve × `Surface2`) so it picks up the same
 hue family as the line numbers and markdown headings but stays muted
 enough to disappear behind code. Disabled in `NvimTree`, `help`,
-`markdown`, `terminal`, and Diffview buffers via a buffer-local
+`markdown`, and `terminal` buffers via a buffer-local
 `miniindentscope_disable` flag.
 
 ## Cursor (`smear-cursor.nvim`)
@@ -396,10 +396,32 @@ filtered out of the listing.
 | `<leader>gs`               | Changed files in a snacks picker    |
 | `<leader>gh`               | All changed hunks in a snacks picker |
 | `<leader>go`               | Open file on remote in browser (visual: line range) |
-| `<leader>gd`               | Toggle Diffview (open / close)      |
-| `<leader>gr` (in Diffview) | Revert file to base                 |
-| `<leader>gf` (in Diffview) | Open file in editor, close Diffview |
-| `q` (in Diffview)          | Close Diffview                      |
+| `<leader>gt`               | Toggle inline line blame            |
+| `<leader>gd`               | Open `lazygit` in a float           |
+
+`<leader>gd` opens `lazygit` in a floating terminal via `Snacks.lazygit`, which
+covers staging (by file, hunk or line), commits, amends, branches, rebases,
+stashes and log browsing. It needs the `lazygit` binary on `$PATH`; `snacks`
+itself needs no setup entry for this, as the module is on-demand.
+
+Two things `snacks` wires up beyond launching it. It generates a lazygit theme
+from the current colorscheme's highlight groups (`MatchParen`, `FloatBorder`,
+`Visual`, `DiagnosticError`, ...) into `stdpath('cache')/lazygit-theme.yml` and
+injects it by appending to `LG_CONFIG_FILE`, so your own `config.yml` is layered
+first and preserved; it is regenerated on `ColorScheme`. And it sets
+`os.editPreset = "nvim-remote"`, so pressing `e` on a file inside lazygit closes
+lazygit and opens that file in a tab of the **running** nvim instead of nesting a
+second one -- this works via the `$NVIM` variable nvim exports inside terminal
+buffers, so no `nvr` is required. Because snacks' generated config is layered
+last, its `editPreset` and `nerdFontsVersion` win over your own `config.yml`.
+
+This replaced `diffview.nvim`, which previously held `<leader>gd`. The tradeoff:
+lazygit does far more git *operations*, but its diff pane is plain terminal text
+rather than real editor buffers, so there is no treesitter highlighting or
+`]c`/`[c` navigation inside it, and no file-history browsing across commits. For
+reading changes, `<leader>gh` (hunks picker) and `<leader>gp` (inline preview)
+cover the common cases. `Snacks.lazygit.log_file()` gives the current file's
+history if you want it bound.
 
 Inline blame is on with `delay = 0` — the author, commit time, and
 summary appear at end of line as soon as the cursor lands, with no
@@ -453,7 +475,7 @@ Set in `lua/core/options.lua`:
 - Terminal/window title set to `<project> - nvim` (basename of `cwd`) via
   `title` + `titlestring`.
 - `signcolumn = "yes:2"` so gitsigns and diagnostic signs each get a cell.
-- `scrollopt = "ver,jump"` so Diffview's two windows stay synced vertically.
+- `scrollopt = "ver,jump"` so `:diffthis` windows stay synced vertically.
 - `updatetime = 100` so `CursorHold` fires quickly (drives the LSP
   document highlight).
 - Cursorline only in the focused window and outside insert mode

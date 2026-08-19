@@ -12,7 +12,7 @@ function M.setup()
 	})
 
 	vim.api.nvim_create_autocmd("FileType", {
-		pattern = { "NvimTree", "help", "markdown", "terminal", "DiffviewFiles", "DiffviewFileHistory" },
+		pattern = { "NvimTree", "help", "markdown", "terminal" },
 		callback = function()
 			vim.b.miniindentscope_disable = true
 		end,

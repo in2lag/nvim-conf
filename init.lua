@@ -11,7 +11,6 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons", version = "c72328a5494b4502947a022fe69c0c47e53b6aa6" },
 	{ src = "https://github.com/folke/snacks.nvim", version = "e6fd58c82f2f3fcddd3fe81703d47d6d48fc7b9f" }, -- v2.31.0
 	{ src = "https://github.com/lewis6991/gitsigns.nvim", version = "6d808f99bd63303646794406e270bd553ad7792e" },
-	{ src = "https://github.com/sindrets/diffview.nvim", version = "4516612fe98ff56ae0415a259ff6361a89419b0a" },
 	{ src = "https://github.com/folke/which-key.nvim", version = "3aab2147e74890957785941f0c1ad87d0a44c15a" },
 	{ src = "https://github.com/stevearc/conform.nvim", version = "dca1a190aa85f9065979ef35802fb77131911106" },
 	{ src = "https://github.com/Saghen/blink.cmp", version = "78336bc89ee5365633bcf754d93df01678b5c08f" },
