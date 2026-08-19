@@ -30,10 +30,6 @@
       "src": "https://github.com/rmagatti/goto-preview",
       "version": "'d2d6923c9b9e0e43f0b9b566f261a8b1ae016540'"
     },
-    "gruvbox.nvim": {
-      "rev": "154eb5ff5b96d0641307113fa385eaf0d36d9796",
-      "src": "https://github.com/ellisonleao/gruvbox.nvim"
-    },
     "mini.nvim": {
       "rev": "1345d191bb3da9c7b0e977f4387c5761f9bff68d",
       "src": "https://github.com/nvim-mini/mini.nvim",
@@ -103,10 +99,6 @@
       "rev": "e6fd58c82f2f3fcddd3fe81703d47d6d48fc7b9f",
       "src": "https://github.com/folke/snacks.nvim",
       "version": "'e6fd58c82f2f3fcddd3fe81703d47d6d48fc7b9f'"
-    },
-    "toggleterm.nvim": {
-      "rev": "9a88eae817ef395952e08650b3283726786fb5fb",
-      "src": "https://github.com/akinsho/toggleterm.nvim"
     },
     "tree-sitter-manager.nvim": {
       "rev": "33a94d022e3a5a500d878b784ba7fec61559c70a",
