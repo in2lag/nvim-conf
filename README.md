@@ -255,9 +255,24 @@ LSP diagnostics render in three places, configured in `lua/ui/diagnostics.lua`:
 
 - **Float** (`<leader>cd`): full message with source, rounded border.
 
-`update_in_insert` is on — diagnostics refresh live while typing. LSP
-servers (vtsls, gopls) debounce publishing internally, so you don't see a
-new diagnostic on every keystroke.
+**Display is debounced while typing.** Any edit hides the buffer's diagnostics
+entirely — signs, underline and virtual text — and they come back once you stop
+typing for `DEBOUNCE_MS` (500 ms, at the top of `lua/ui/diagnostics.lua`).
+Leaving insert mode shows them immediately rather than waiting out the delay,
+since you have clearly stopped typing.
+
+`vim.diagnostic` has no delay or debounce option, so this is done by hand with
+`vim.diagnostic.enable(false, { bufnr })` on `TextChanged`/`TextChangedI`/
+`TextChangedP` plus a deferred re-enable. A per-buffer generation counter, rather
+than a timer handle, decides whether a pending re-enable is still current: each
+edit bumps the count and thereby invalidates the previous callback, so there are
+no timers to stop, close or leak on buffer wipeout.
+
+`update_in_insert` stays **true** on purpose. It controls whether diagnostics are
+*recomputed* in insert mode, while the debounce controls whether they are
+*displayed* — flipping it off would mean whatever reappears after your pause is
+stale. (Neovim's own default is `false`, which instead freezes stale diagnostics
+on screen while you type and refreshes them on `InsertLeave`.)
 
 Document highlight: when the cursor rests on a symbol for `updatetime`
 (100 ms), all other references of that symbol in the buffer get a subtle
