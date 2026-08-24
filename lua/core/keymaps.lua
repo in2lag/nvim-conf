@@ -16,10 +16,6 @@ end, { desc = "Git changed files" })
 map("n", "<leader>gh", function()
 	Snacks.picker.git_diff()
 end, { desc = "Git hunks" })
--- In visual mode the browser link targets the selected line range
-map({ "n", "x" }, "<leader>go", function()
-	Snacks.gitbrowse()
-end, { desc = "Open file on remote (git)" })
 
 -- [ General ]
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })

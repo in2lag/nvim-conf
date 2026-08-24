@@ -395,7 +395,7 @@ filtered out of the listing.
 | `<leader>gp`               | Inline preview of the current hunk  |
 | `<leader>gs`               | Changed files in a snacks picker    |
 | `<leader>gh`               | All changed hunks in a snacks picker |
-| `<leader>go`               | Open file on remote in browser (visual: line range) |
+| `<leader>go`               | Open the PR that introduced the current line |
 | `<leader>gt`               | Toggle inline line blame            |
 | `<leader>gd`               | Open `lazygit` in a float           |
 
@@ -422,6 +422,32 @@ rather than real editor buffers, so there is no treesitter highlighting or
 reading changes, `<leader>gh` (hunks picker) and `<leader>gp` (inline preview)
 cover the common cases. `Snacks.lazygit.log_file()` gives the current file's
 history if you want it bound.
+
+`<leader>go` answers "why is this line here?" by landing on the pull request
+that introduced it. It blames the line for its commit, then asks GitHub's
+"pull requests associated with a commit" endpoint (`gh api
+repos/{owner}/{repo}/commits/<sha>/pulls`) which PR that commit came from. That
+endpoint matches the *merge result*, so squash, merge and rebase commits all
+resolve rather than only branch heads. If nothing is associated -- a commit
+pushed straight to a branch, or a rebase that rewrote the sha the PR carried --
+it retries with `gh pr list --search <sha>`, and failing that opens the commit
+page instead of erroring, which is what happens in this repo (no PRs, all
+direct-to-main).
+
+Two details worth knowing. The blame runs against the **buffer** rather than the
+file on disk (`git blame --contents -`, buffer piped in on stdin): with unsaved
+edits above the cursor the two disagree about which line is which, and you would
+silently open the PR for a neighbouring line. And both `git` and `gh` run from
+the file's own directory, because the `{owner}/{repo}` placeholders resolve from
+the remote found there -- not necessarily nvim's cwd once `auto-session` or a
+picker has moved it. Requires `gh` on `$PATH` and authenticated (`gh auth
+login`); the whole chain is async via `vim.system`, so the network call never
+blocks the editor.
+
+This replaced `Snacks.gitbrowse()`, which previously held `<leader>go` and opened
+the file itself on the remote at the current line. Consequence: there is no
+longer a mapping for a plain file permalink, and `<leader>go` on an uncommitted
+line warns instead of linking it.
 
 Inline blame is on with `delay = 0` — the author, commit time, and
 summary appear at end of line as soon as the cursor lands, with no
