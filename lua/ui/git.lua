@@ -63,11 +63,30 @@ function M.setup()
 	-- When diagnostics change while the cursor sits still, fake a CursorMoved
 	-- so gitsigns re-runs the blame formatter and the suppression kicks in
 	-- without waiting for the next real cursor move.
+	--
+	-- Deferred through vim.schedule: DiagnosticChanged can arrive under textlock,
+	-- notably while nvim-tree wipes its rogue buffer on open and thereby clears
+	-- that buffer's diagnostics mid-window-creation. Dispatching CursorMoved
+	-- synchronously from there hands the locked context to every CursorMoved
+	-- consumer, and the ones that open a window (smear-cursor) die with E565.
 	vim.api.nvim_create_autocmd("DiagnosticChanged", {
 		callback = function(args)
-			if args.buf == vim.api.nvim_get_current_buf() then
-				vim.api.nvim_exec_autocmds("CursorMoved", { modeline = false })
+			if args.buf ~= vim.api.nvim_get_current_buf() then
+				return
 			end
+			vim.schedule(function()
+				local buf = vim.api.nvim_get_current_buf()
+				-- Re-check on the main loop: the buffer may have been wiped, or the
+				-- cursor moved to another window, while we were queued.
+				if buf ~= args.buf or not vim.api.nvim_buf_is_valid(buf) then
+					return
+				end
+				-- Only real file buffers carry git blame; skip trees, pickers, terminals.
+				if vim.bo[buf].buftype ~= "" then
+					return
+				end
+				vim.api.nvim_exec_autocmds("CursorMoved", { modeline = false })
+			end)
 		end,
 	})
 
