@@ -27,10 +27,6 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 -- <Esc> does -- normal mode cannot hold a position past the last character.
 map({ "n", "i", "v", "s" }, "<D-s>", "<Esc><cmd>write<CR>", { desc = "Save file (return to normal mode)" })
 
--- [ Buffers ]
-map("n", "L", "<cmd>bnext<CR>", { desc = "Next buffer" })
-map("n", "H", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
-
 -- [ Clipboard ]
 map({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to system" })
 map("n", "<leader>v", '"+p', { desc = "Paste from system" })

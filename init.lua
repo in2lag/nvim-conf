@@ -34,6 +34,7 @@ end
 
 require("core.options")
 require("core.keymaps")
+require("core.bufhistory") -- owns H/L; must follow core.keymaps
 require("core.treesitter")
 require("core.lsp")
 require("ui.snacks") -- must precede every Snacks consumer; owns the one setup() call

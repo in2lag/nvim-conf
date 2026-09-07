@@ -12,6 +12,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 ├── nvim-pack-lock.json      vim.pack lockfile (pinned plugin revisions)
 ├── lua/
 │   ├── core/
+│   │   ├── bufhistory.lua   Browser-style back/forward file history (H/L)
 │   │   ├── keymaps.lua      Leader, clipboard, editing, save (Cmd+S), smart Home
 │   │   ├── lsp.lua          LSP server config (vtsls, gopls, svelte, angularls)
 │   │   ├── options.lua      Global opts (indent=2, termguicolors, listchars)
@@ -87,6 +88,7 @@ since nothing floats.
 | Completion menu  | `blink.cmp` (Lua fuzzy matcher)                         |
 | AI suggestions   | `copilot.lua` (ghost text)                              |
 | Peek / preview   | `goto-preview`                                          |
+| File history     | `lua/core/bufhistory.lua` (browser-style `H`/`L` ring)   |
 | Sessions         | `auto-session` (per-cwd auto save)                      |
 | Formatter        | `conform.nvim`                                          |
 | Leader hints     | `which-key.nvim`                                        |
@@ -296,7 +298,7 @@ Enabled per buffer on `LspAttach` for servers that support it.
 | `<leader>v`               | Paste from system clipboard                        |
 | `<leader>P`               | Paste over selection without losing yank           |
 | `<leader>x`               | Black-hole delete (no clobber of yank)             |
-| `L` / `H`                 | Next / previous buffer                             |
+| `H` / `L`                 | Back / forward through main-window file history    |
 | `<D-s>` (Cmd+S)           | Save file and return to normal mode                |
 
 `<D-s>` is Cmd+S: Ghostty forwards `Cmd+S` to nvim as `<D-s>` over the kitty
@@ -307,6 +309,48 @@ synchronous, so leaving insert first also keeps formatting from fighting the
 cursor. As with any `<Esc>`, exiting insert moves the cursor one column left;
 normal mode cannot hold a position past the last character. Defined in
 `lua/core/keymaps.lua`.
+
+`H` and `L` walk the files the **main editing windows** have held, back and
+forward. Defined in `lua/core/bufhistory.lua`.
+
+They used to be `:bprevious`/`:bnext`, which is what made them feel random:
+those walk buffer *number* order — the order buffers were created — which has
+nothing to do with the order you visited files. The buffer list fills up from
+things that do not feel like opening a buffer: the snacks pickers
+(`<leader><leader>`, `<leader>p`, `<leader>gs`), the references picker behind
+`gpr`, the `<CR>` promote hook in `lua/ui/peek.lua`, and `auto-session`
+restoring a whole session's list at startup. So `H` reliably went somewhere,
+just never where you had been.
+
+Recording is deliberately narrow: only real files (`buftype == ""`) in
+non-floating windows. Peek windows, pickers, `lazygit`, `nvim-tree`, terminals
+and quickfix are all skipped, so navigating a picker never pollutes the history
+you use the picker to navigate. Inside `nvim-tree` its own buffer-local `H`/`L`
+(toggle dotfiles / group-empty) still win, since these are global mappings.
+
+Visiting a new file truncates the forward branch, like a browser, but the ends
+wrap: `H` from the oldest file lands on the newest and `L` from the newest lands
+on the oldest, so neither key ever dead-ends. The walk is bounded to one lap, so
+a history whose only live entry is the file you are already in reports "no other
+file" instead of spinning. Buffers deleted since they were recorded are skipped
+rather than jumped to, and closing a file's window with `:q` forgets it, so a
+file you deliberately closed stops coming back around the ring. That last one
+hooks `QuitPre` rather than `WinClosed` on purpose: `WinClosed` also fires when a
+peek float is dismissed, and `goto-preview` resolves its target through
+`vim.uri_to_bufnr`, which returns the *listed* buffer number when the file is
+already open — so dismissing a peek would silently evict that file from the
+history. A `:q` on a window whose file is still open in another window leaves the
+history alone. The buffer itself stays listed either way (that is what `:q` does
+with `hidden` set), so it remains available in `<leader>fb`; use `:bd` if you
+want it gone from the buffer list too.
+
+The stack holds 100 entries. `:BufHistory` prints it with `>` marking where you
+are, which is the fastest way to see why a jump went where it did.
+
+Worth knowing what this is *not*: it is per-history, not per-window, so splits
+share one stack. For the two adjacent native motions, `<C-^>` still toggles the
+alternate file and `<C-o>`/`<C-i>` walk the jumplist by cursor position rather
+than by file.
 
 ## Surround Pairs (`mini.surround`)
 
