@@ -36,6 +36,7 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   │   ├── smear.lua        smear-cursor.nvim (animated cursor smear)
 │   │   ├── statusline.lua   mini.statusline (dim path, bold filename)
 │   │   ├── surround.lua     mini.surround (sa/sd/sr text-object pairs)
+│   │   ├── tabline.lua      Native tabline drawing the bufhistory ring
 │   │   ├── tree.lua         nvim-tree with smart toggle
 │   │   └── whichkey.lua     which-key prompt for leader bindings
 │   └── ai/
@@ -88,7 +89,7 @@ since nothing floats.
 | Completion menu  | `blink.cmp` (Lua fuzzy matcher)                         |
 | AI suggestions   | `copilot.lua` (ghost text)                              |
 | Peek / preview   | `goto-preview`                                          |
-| File history     | `lua/core/bufhistory.lua` (browser-style `H`/`L` ring)   |
+| File history     | `core/bufhistory` ring + native tabline drawn from it   |
 | Sessions         | `auto-session` (per-cwd auto save)                      |
 | Formatter        | `conform.nvim`                                          |
 | Leader hints     | `which-key.nvim`                                        |
@@ -344,8 +345,9 @@ history alone. The buffer itself stays listed either way (that is what `:q` does
 with `hidden` set), so it remains available in `<leader>fb`; use `:bd` if you
 want it gone from the buffer list too.
 
-The stack holds 100 entries. `:BufHistory` prints it with `>` marking where you
-are, which is the fastest way to see why a jump went where it did.
+The stack holds 100 entries. The tabline across the top draws it live (see
+[Tabline](#tabline)); `:BufHistory` prints the raw stack with `>` marking where
+you are, dead entries included, when the bar is not enough to explain a jump.
 
 Worth knowing what this is *not*: it is per-history, not per-window, so splits
 share one stack. For the two adjacent native motions, `<C-^>` still toggles the
@@ -628,6 +630,48 @@ The wider `mini.nvim` package is installed as a single repo and unlocks
 the rest of the family (`mini.surround`, `mini.pairs`, `mini.indentscope`,
 etc.) via `require('mini.X').setup()` — no extra downloads needed when
 adding more modules later.
+
+## Tabline
+
+A single bar across the top that draws the `H`/`L` file history from
+`lua/core/bufhistory.lua`, oldest on the left, newest on the right, the entry
+you are sitting on highlighted. No plugin: `'tabline'` is a statusline-style
+format string, and `lua/ui/tabline.lua` builds one from the history array.
+`showtabline = 2` keeps it up even with one file open.
+
+```
+   init.lua   󰂺 README.md  [  tabline.lua ]   bufhistory.lua ●   keymaps.lua
+                            └── current ──┘                  └ modified
+```
+
+Because it is the same list the keys walk, the bar is the keys made visible: `H`
+slides the highlight one entry left, `L` one entry right, a new visit appends on
+the right and drops every entry that was to the right of you (the browser
+forward-branch rule), and a buffer wiped since it was recorded is simply not
+drawn. Left-click an entry to jump to it, middle-click to `:bdelete` it. A
+modified buffer shows a warn-coloured `●` in the slot that is otherwise padding,
+so saving does not shift the entries beside it.
+
+Basenames only, except where two entries would read the same, in which case each
+gets its parent directory (`logger/index.ts`, `api/index.ts`). When the bar is
+wider than the window it keeps the current entry visible and grows outwards from
+it alternating sides, marking a cut edge with `‹` or `›`. Tab pages are not part
+of this workflow; if one is open anyway a `tab 2/3` counter appears at the far
+right so the bar does not silently lie about it.
+
+Colours come from the theme's `TabLine`, `TabLineSel` and `TabLineFill` groups,
+which catppuccin already styles; `TabLineSel` is `Normal` fg on `Normal` bg, so
+the current entry reads as attached to the buffer beneath it. Only the modified
+marker needs two groups of its own, derived from `DiagnosticWarn` and rebuilt on
+`ColorScheme` since `init.lua` applies the colorscheme after this module loads.
+
+`mini.tabline` would have been two lines, but it lists buffers in *number* order,
+the exact ordering `H`/`L` were moved away from, and it cannot be given another
+one. The history module exposes `state()` and `jump_to(i)` for this bar and
+requests a `redrawtabline` when it mutates outside an event that would redraw
+anyway (`forget()` from `QuitPre`/`BufDelete`).
+
+---
 
 ## Sessions
 

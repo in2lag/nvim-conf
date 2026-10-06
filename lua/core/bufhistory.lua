@@ -24,7 +24,26 @@ local function is_float(win)
 end
 
 local function is_file_buf(buf)
-	return vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" and vim.api.nvim_buf_get_name(buf) ~= ""
+	return buf ~= nil
+		and vim.api.nvim_buf_is_valid(buf)
+		and vim.bo[buf].buftype == ""
+		and vim.api.nvim_buf_get_name(buf) ~= ""
+end
+M.is_file_buf = is_file_buf
+
+-- ui.tabline draws this stack. Most mutations happen inside autocmds that
+-- trigger a redraw anyway, but forget() from QuitPre/BufDelete does not always,
+-- so ask for one explicitly; scheduled so a burst of changes costs one redraw.
+local redraw_pending = false
+local function changed()
+	if redraw_pending or vim.o.showtabline == 0 then
+		return
+	end
+	redraw_pending = true
+	vim.schedule(function()
+		redraw_pending = false
+		vim.cmd.redrawtabline()
+	end)
 end
 
 local function record(buf)
@@ -51,6 +70,7 @@ local function record(buf)
 		table.remove(history, 1)
 	end
 	index = #history
+	changed()
 end
 
 -- Remove every entry for `buf`, keeping the pointer on the entry it was on.
@@ -64,6 +84,32 @@ local function forget(buf)
 		end
 	end
 	index = math.max(index, math.min(1, #history))
+	changed()
+end
+
+-- The stack and the pointer, read-only by convention. ui.tabline renders it;
+-- the pointer is the entry the current window sits on.
+---@return integer[] history, integer index
+function M.state()
+	return history, index
+end
+
+-- Jump straight to entry `i`. Returns false when it names a dead buffer or we
+-- are not in a main window, so callers can fall through to their own message.
+function M.jump_to(i)
+	if is_float(vim.api.nvim_get_current_win()) then
+		vim.notify("Not in a main window", vim.log.levels.WARN, { title = "Buffer history" })
+		return false
+	end
+	if not is_file_buf(history[i]) then
+		return false
+	end
+	-- Move the pointer first: record() reads it to recognise this switch as
+	-- ours and not a new visit.
+	index = i
+	vim.api.nvim_set_current_buf(history[i])
+	changed()
+	return true
 end
 
 -- Step `step` entries through the history, wrapping past either end, and skip
@@ -92,11 +138,7 @@ local function jump(step)
 		if i == index then
 			break -- came all the way round to ourselves
 		end
-		if is_file_buf(history[i]) then
-			-- Move the pointer first: record() reads it to recognise this switch as
-			-- ours and not a new visit.
-			index = i
-			vim.api.nvim_set_current_buf(history[i])
+		if M.jump_to(i) then
 			return
 		end
 	end
