@@ -33,6 +33,7 @@ if vim.loader then
 end
 
 require("core.options")
+require("core.root") -- cwd from the marker list; session and nvim-tree follow it
 require("core.keymaps")
 require("core.bufhistory") -- owns H/L; must follow core.keymaps
 require("core.treesitter")
