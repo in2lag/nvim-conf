@@ -21,11 +21,6 @@ vim.pack.add({
 	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim", version = "a798325b7f36acc62741d1029930a7b96d4dd4bf" },
 	{ src = "https://github.com/nvim-mini/mini.nvim", version = "1345d191bb3da9c7b0e977f4387c5761f9bff68d" }, -- v0.18.0
 	{ src = "https://github.com/sphamba/smear-cursor.nvim", version = "9e9378d6ee34bb3782e0e8c63d9ec8ca618b479b" },
-	{ src = "https://github.com/mfussenegger/nvim-dap", version = "531771530d4f82ad2d21e436e3cc052d68d7aebb" },
-	{ src = "https://github.com/nvim-neotest/nvim-nio", version = "21f5324bfac14e22ba26553caf69ec76ae8a7662" },
-	{ src = "https://github.com/rcarriga/nvim-dap-ui", version = "1a66cabaa4a4da0be107d5eda6d57242f0fe7e49" },
-	{ src = "https://github.com/theHamsta/nvim-dap-virtual-text", version = "fbdb48c2ed45f4a8293d0d483f7730d24467ccb6" },
-	{ src = "https://github.com/leoluz/nvim-dap-go", version = "b4421153ead5d726603b02743ea40cf26a51ed5f" },
 })
 
 if vim.loader then
@@ -57,7 +52,6 @@ require("ui.pairs")
 require("ui.indent")
 require("ui.smear")
 require("ui.markdown")
-require("debug.dap")
 require("ai.copilot")
 require("catppuccin").setup({ flavour = "frappe" })
 

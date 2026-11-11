@@ -1,23 +1,10 @@
 local M = {}
 
 function M.setup()
-	local web = { "prettier", "eslint_d" }
 	local util = require("conform.util")
 
 	require("conform").setup({
 		formatters = {
-			eslint_d = {
-				cwd = util.root_file({
-					"eslint.config.mjs",
-					"eslint.config.js",
-					"eslint.config.cjs",
-					"eslint.config.ts",
-					".eslintrc.json",
-					".eslintrc.js",
-					".eslintrc.cjs",
-				}),
-				require_cwd = true,
-			},
 			prettier = {
 				cwd = util.root_file({
 					".prettierrc",
@@ -31,31 +18,9 @@ function M.setup()
 					"package.json",
 				}),
 			},
-			goimports = {
-				prepend_args = function(_, ctx)
-					local gomod = vim.fs.find("go.mod", { upward = true, path = ctx.dirname, type = "file" })[1]
-					if not gomod then
-						return {}
-					end
-					for line in io.lines(gomod) do
-						local mod = line:match("^module%s+(%S+)")
-						if mod then
-							return { "-local", mod }
-						end
-					end
-					return {}
-				end,
-			},
 		},
 		formatters_by_ft = {
-			javascript = web,
-			javascriptreact = web,
-			typescript = web,
-			typescriptreact = web,
-			svelte = web,
-			vue = web,
 			html = { "prettier" },
-			htmlangular = { "prettier" },
 			css = { "prettier" },
 			scss = { "prettier" },
 			json = { "prettier" },
@@ -63,7 +28,6 @@ function M.setup()
 			yaml = { "prettier" },
 			markdown = { "prettier" },
 			lua = { "stylua" },
-			go = { "goimports" },
 		},
 		format_on_save = function(bufnr)
 			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then

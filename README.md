@@ -2,7 +2,7 @@
 
 Personal Neovim setup. Built on Neovim 0.12+ using the built-in `vim.pack`
 package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
-`lua/ui`, `lua/debug`, and `lua/ai`.
+`lua/ui`, and `lua/ai`.
 
 ## Layout
 
@@ -14,16 +14,15 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 │   ├── core/
 │   │   ├── bufhistory.lua   Browser-style back/forward file history (H/L)
 │   │   ├── keymaps.lua      Leader, clipboard, editing, save (Cmd+S), smart Home
-│   │   ├── lsp.lua          LSP server config (vtsls, gopls, svelte, angularls)
+│   │   ├── lsp.lua          Document highlight for an attached LSP client
 │   │   ├── options.lua      Global opts (indent=2, termguicolors, listchars)
+│   │   ├── root.lua         Project root (.prj-root, else .git); sets cwd
 │   │   └── treesitter.lua   tree-sitter-manager + parser list
-│   ├── debug/
-│   │   └── dap.lua          nvim-dap + dap-ui (Go via delve, JS/TS via vscode-js-debug)
 │   ├── ui/
 │   │   ├── completion.lua   blink.cmp (LSP, buffer, path, snippets)
 │   │   ├── cursorline.lua   Cursorline only in focused window, outside insert
 │   │   ├── diagnostics.lua  vim.diagnostic config + keymaps
-│   │   ├── format.lua       conform.nvim (prettier, eslint_d, stylua)
+│   │   ├── format.lua       conform.nvim (prettier, stylua)
 │   │   ├── git.lua          gitsigns + lazygit float (tuned diff theme)
 │   │   ├── indent.lua       mini.indentscope (animated scope guide)
 │   │   ├── markdown.lua     render-markdown.nvim (in-buffer preview)
@@ -48,22 +47,12 @@ package manager (no `lazy.nvim`, no `packer`). Modular Lua under `lua/core`,
 1. Clone into `~/.config/nvim`.
 2. Launch `nvim`. `vim.pack` resolves plugins from `nvim-pack-lock.json` on
    first run and clones them into the pack directory.
-3. Tree-sitter parsers listed in `lua/core/treesitter.lua` (`typescript`,
-   `tsx`, `javascript`, `svelte`, `angular`, `html`, `css`, `markdown`,
-   `markdown_inline`, `go`, `gomod`, `gosum`, `gowork`, `lua`, `vim`,
-   `vimdoc`, `query`, `bash`, `json`, `yaml`, `toml`) install on first
-   start via `tree-sitter-manager`. `.jsonc` files reuse the `json`
-   parser via `vim.treesitter.language.register`; `*.component.html` files are
-   detected as the `htmlangular` filetype and highlighted with the `angular`
-   parser (see the Angular section).
+3. Tree-sitter parsers listed in `lua/core/treesitter.lua` (`html`, `css`,
+   `markdown`, `markdown_inline`, `lua`, `vim`, `vimdoc`, `query`, `bash`,
+   `json`, `yaml`, `toml`) install on first start via `tree-sitter-manager`.
+   `.jsonc` files reuse the `json` parser via `vim.treesitter.language.register`.
 4. Run `:Copilot auth` once to authorize GitHub Copilot.
-5. Install the language servers — or just start nvim and run
-   `:LspInstallMissing`, which installs whichever are absent for the currently
-   active Node/Go toolchain. See [LSP servers](#lsp-servers).
-6. Optional, for debugging: Go needs `dlv` on `$PATH`; JS/TS needs
-   Microsoft's `vscode-js-debug` installed manually so that
-   `~/.local/share/nvim/js-debug/src/dapDebugServer.js` exists.
-7. The leader key is `<Space>`.
+5. The leader key is `<Space>`.
 
 Plugins are pinned to **exact commit revisions** in both `init.lua` (each
 spec's `version = "<sha>"`) and `nvim-pack-lock.json`, so installs are
@@ -83,8 +72,7 @@ since nothing floats.
 | File tree        | `nvim-tree.lua` + `nvim-web-devicons`                   |
 | Git: signs       | `gitsigns.nvim`                                         |
 | Git: full UI     | `lazygit` in a float (via `snacks.lazygit`)             |
-| LSP              | `nvim-lspconfig` + `vtsls`, `gopls`, `svelte`, `angularls` |
-| Debugging        | `nvim-dap` + `nvim-dap-ui`, `nvim-dap-go`, virtual text |
+| LSP              | `nvim-lspconfig` (no server enabled; highlight on attach) |
 | Tree-sitter      | `tree-sitter-manager.nvim`                              |
 | Completion menu  | `blink.cmp` (Lua fuzzy matcher)                         |
 | AI suggestions   | `copilot.lua` (ghost text)                              |
@@ -143,44 +131,11 @@ Float window over the current buffer with the requested LSP info.
 | `Q` (in float)    | Close all peek windows             |
 | `<CR>` (in float) | Promote peek to full buffer        |
 
-`svelte-language-server` runs on `.svelte` buffers so peek/refs work from
-inside Svelte components. `vtsls` is configured with `typescript-svelte-plugin`
-as a global TS server plugin, so references on a TS symbol also surface
-usages from `.svelte` files. Both packages live in the global npm prefix.
-
 Peek needs an attached server that supports the method. If none does, the
 keymaps report it through the notifier naming the method, filetype and attached
 clients, instead of letting `goto-preview` `print()` the failure — that reaches
-you as a bare `press ENTER` prompt under `cmdheight=0`. The usual cause is a
-language server missing from `$PATH`; see [LSP servers](#lsp-servers).
-
-## LSP servers
-
-| Server      | Executable     | Install                                                                     |
-| ----------- | -------------- | --------------------------------------------------------------------------- |
-| `vtsls`     | `vtsls`        | `npm i -g @vtsls/language-server typescript typescript-svelte-plugin`       |
-| `svelte`    | `svelteserver` | `npm i -g svelte-language-server`                                           |
-| `angularls` | `ngserver`     | `npm i -g @angular/language-server`                                         |
-| `gopls`     | `gopls`        | `go install golang.org/x/tools/gopls@latest`                                |
-
-`lua/core/lsp.lua` only calls `vim.lsp.enable()` for servers whose executable is
-actually on `$PATH`. Missing ones are collected and reported in a single startup
-notification naming them and the active `node`, and **`:LspInstallMissing`**
-reinstalls exactly those (npm packages batched into one `npm i -g`, `gopls` via
-`go install`) for the current toolchain. Restart with `:restart` afterwards.
-
-This exists because global npm binaries are **per-Node-version**. Switching Node
-— including `nvm alias default 22` silently following a newly installed 22.x —
-moves the global prefix out from under every `npm i -g` language server at once.
-The failure is near-silent: no client attaches, and LSP features report only
-"not supported by any server", which `cmdheight=0` reduces to a `press ENTER`
-prompt. `nvm install <ver> --reinstall-packages-from=<old>` avoids it when
-upgrading deliberately.
-
-For the same reason nothing here hardcodes a Node version: `vtsls`'s `tsdk` and
-the `typescript-svelte-plugin` location are resolved at startup from the `node`
-on `$PATH` (`lib/node_modules/<pkg>`, stat-checked) and omitted if absent,
-rather than pointing at a version-pinned path that a Node bump invalidates.
+you as a bare `press ENTER` prompt under `cmdheight=0`. No language server is
+enabled in this config, so those keys stay quiet until one is.
 
 ## Notifications
 
@@ -204,31 +159,6 @@ produce the prompt; `lua/ui/peek.lua` works around one such case in
 therefore configured in `lua/ui/snacks.lua`, which `init.lua` requires before
 any module that uses the `Snacks` global; feature modules only consume it.
 
-## Angular
-
-`angularls` (the Angular Language Service — install once with
-`npm i -g @angular/language-server`) provides template intelligence:
-completion, go-to-definition, and find-references for bindings/variables
-inside `.html` / `.component.html` templates, plus template diagnostics.
-
-It is restricted to the `html` and `htmlangular` filetypes in
-`lua/core/lsp.lua` and deliberately does **not** attach to `.ts` files.
-`vtsls` already owns those, and letting both attach doubles completions and
-diagnostics and breaks `goto-preview`: a references request fans out to every
-attached client, so `gpr` opened duplicate windows. The Angular server still
-reads the whole TypeScript project from disk, so template intelligence is
-unaffected — only inline templates written as a string inside a `.ts`
-component lose Angular-aware features (the TypeScript itself is still handled
-by `vtsls`).
-
-Template highlighting uses the `angular` tree-sitter parser:
-`*.component.html` is detected as the `htmlangular` filetype via
-`vim.filetype.add`, the parser is registered for it, and a `FileType` autocmd
-starts treesitter — needed because `tree-sitter-manager` keys its
-auto-highlight off parser names, not the `htmlangular` filetype. Templates are
-formatted with `prettier` via `conform.nvim` (the `htmlangular` filetype is
-mapped to prettier in `lua/ui/format.lua`).
-
 ## Diagnostics
 
 LSP diagnostics render in three places, configured in `lua/ui/diagnostics.lua`:
@@ -245,8 +175,8 @@ LSP diagnostics render in three places, configured in `lua/ui/diagnostics.lua`:
   for the same eol slot:
 
   ```
-  const foo = bar()    Cannot find name 'bar'                          ← broken line
-  const ok  = 1        Petr, 14:32 • Add ok helper                     ← clean line
+  local foo = bar()    Undefined global `bar`                           ← broken line
+  local ok  = 1        Petr, 14:32 • Add ok helper                     ← clean line
   ```
 
   Suppression is handled by a function `current_line_blame_formatter` in
@@ -506,36 +436,6 @@ diagnostic to avoid the two fighting for the same eol slot.
 quietly — the inline word-diff (`DiffText`) is a slightly brighter green
 than `DiffAdd` but no longer bold. Re-applied on every `ColorScheme`.
 
-## Debugging (nvim-dap)
-
-`nvim-dap` with `nvim-dap-ui` (opens automatically on launch/attach,
-closes when the session ends) and `nvim-dap-virtual-text` for inline
-variable values. Configured in `lua/debug/dap.lua`.
-
-Adapters:
-
-- **Go** — `nvim-dap-go` wraps Delve (`dlv` on `$PATH`); includes
-  debug-nearest-test and attach.
-- **JS / TS / Svelte** — Microsoft's `vscode-js-debug` (`pwa-node`,
-  `pwa-chrome`), expected under `~/.local/share/nvim/js-debug/`. Launch
-  current file with Node, attach to a process, or launch Chrome against
-  `localhost:5173` (Vite/Svelte dev server).
-
-| Key          | Action                    |
-| ------------ | ------------------------- |
-| `<leader>db` | Toggle breakpoint         |
-| `<leader>dB` | Conditional breakpoint    |
-| `<leader>dc` | Continue / start          |
-| `<leader>do` | Step over                 |
-| `<leader>di` | Step into                 |
-| `<leader>dO` | Step out                  |
-| `<leader>dl` | Run last                  |
-| `<leader>dr` | Toggle REPL               |
-| `<leader>du` | Toggle DAP UI             |
-| `<leader>de` | Evaluate expression (n/v) |
-| `<leader>dq` | Terminate session         |
-| `<leader>dt` | Debug nearest Go test     |
-
 ## Editor Defaults
 
 Set in `lua/core/options.lua`:
@@ -606,11 +506,11 @@ dimmed (`StatuslineFileDir`) and the basename bold and brighter
 (`StatuslineFileTail`), so your eye lands on the file you are in:
 
 ```
- Normal  󰰎 ++  packages/logger/src/index.ts        typescript   1:1
-                └──── dimmed ────┘└─ bold ─┘
+ Normal  󰰎 ++  lua/ui/statusline.lua        lua   1:1
+                └─ dimmed ─┘└─ bold ─┘
 ```
 
-Below 100 columns it collapses to the basename alone (`index.ts`).
+Below 100 columns it collapses to the basename alone (`statusline.lua`).
 
 This replaces `mini.statusline`'s `section_filename`, which switches to `%F` —
 the **absolute** path — once the window reaches `trunc_width`, so a wider window
@@ -653,7 +553,7 @@ modified buffer shows a warn-coloured `●` in the slot that is otherwise paddin
 so saving does not shift the entries beside it.
 
 Basenames only, except where two entries would read the same, in which case each
-gets its parent directory (`logger/index.ts`, `api/index.ts`). When the bar is
+gets its parent directory (`core/options.lua`, `ui/options.lua`). When the bar is
 wider than the window it keeps the current entry visible and grows outwards from
 it alternating sides, marking a cut edge with `‹` or `›`. Tab pages are not part
 of this workflow; if one is open anyway a `tab 2/3` counter appears at the far
