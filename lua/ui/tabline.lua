@@ -1,9 +1,14 @@
 local M = {}
 
--- One bar across the top showing the core.bufhistory ring in visit order, the
--- entry H/L are sitting on highlighted. No plugin: 'tabline' is a statusline
--- format string, so this builds one from the history array and hands it to
--- Neovim, which redraws it on its own whenever the screen changes.
+-- One bar on top of each editing window, showing the core.bufhistory ring in
+-- visit order, the entry H/L are sitting on highlighted. No plugin: 'winbar'
+-- is a statusline format string, so this builds one from the history array and
+-- hands it to Neovim, which redraws it on its own whenever the screen changes.
+--
+-- A window bar, not the global tabline. The tabline is a single row above
+-- every window, so the names started at the left edge and sat on NvimTree too.
+-- 'winbar' is drawn inside the window that opts into it, and only real file
+-- windows do: the tree, terminals, help and floats stay full height.
 --
 -- This is the same list H and L walk, drawn instead of imagined: a new visit
 -- appends at the right and clears the forward branch, H slides the highlight
@@ -118,7 +123,8 @@ function M.render()
 
 	-- Everything fits: draw it all. Otherwise grow a window outwards from the
 	-- current entry, alternating sides, and mark whichever side was cut.
-	local columns = vim.o.columns
+	-- Per window: the bar is only as wide as the file window it sits on.
+	local columns = vim.api.nvim_win_get_width(0)
 	local total = 0
 	for _, it in ipairs(items) do
 		total = total + it.width
@@ -176,8 +182,49 @@ function M.setup()
 		callback = define_highlights,
 	})
 
-	vim.o.showtabline = 2
-	vim.o.tabline = "%!v:lua.require'ui.tabline'.render()"
+	-- Leave the global option empty. 'winbar' is global-local, and an empty
+	-- window-local value falls back to the global one, which would paint this
+	-- bar on NvimTree again.
+	vim.o.showtabline = 0
+	vim.o.winbar = ""
+
+	local expr = "%!v:lua.require'ui.tabline'.render()"
+
+	local function wants_bar(win)
+		if vim.api.nvim_win_get_config(win).relative ~= "" then
+			return false
+		end
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.bo[buf].filetype == "NvimTree" then
+			return false
+		end
+		return vim.bo[buf].buftype == ""
+	end
+
+	local function sync_win(win)
+		if not vim.api.nvim_win_is_valid(win) then
+			return
+		end
+		local want = wants_bar(win) and expr or ""
+		if vim.api.nvim_get_option_value("winbar", { scope = "local", win = win }) ~= want then
+			vim.api.nvim_set_option_value("winbar", want, { scope = "local", win = win })
+		end
+	end
+
+	local function sync_all()
+		for _, win in ipairs(vim.api.nvim_list_wins()) do
+			sync_win(win)
+		end
+	end
+
+	-- FileType covers NvimTree setting its type after the window already exists.
+	-- Scheduled so buftype/filetype have settled before we decide.
+	vim.api.nvim_create_autocmd({ "BufWinEnter", "WinNew", "FileType" }, {
+		group = vim.api.nvim_create_augroup("tabline-winbar", { clear = true }),
+		callback = vim.schedule_wrap(sync_all),
+	})
+
+	sync_all()
 end
 
 M.setup()

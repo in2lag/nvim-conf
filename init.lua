@@ -46,7 +46,7 @@ require("ui.completion")
 require("ui.peek")
 require("ui.diagnostics")
 require("ui.statusline")
-require("ui.tabline") -- draws the core.bufhistory ring; after statusline so the bars share highlights
+require("ui.tabline") -- bufhistory ring as a winbar on file windows only
 require("ui.surround")
 require("ui.pairs")
 require("ui.indent")

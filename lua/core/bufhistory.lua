@@ -31,18 +31,20 @@ local function is_file_buf(buf)
 end
 M.is_file_buf = is_file_buf
 
--- ui.tabline draws this stack. Most mutations happen inside autocmds that
--- trigger a redraw anyway, but forget() from QuitPre/BufDelete does not always,
--- so ask for one explicitly; scheduled so a burst of changes costs one redraw.
+-- ui.tabline draws this stack as a winbar. Most mutations happen inside
+-- autocmds that trigger a redraw anyway, but forget() from QuitPre/BufDelete
+-- does not always, so ask for one explicitly; scheduled so a burst of changes
+-- costs one redraw. :redrawstatus refreshes the window bar (see :help 'winbar').
 local redraw_pending = false
 local function changed()
-	if redraw_pending or vim.o.showtabline == 0 then
+	if redraw_pending then
 		return
 	end
 	redraw_pending = true
 	vim.schedule(function()
 		redraw_pending = false
-		vim.cmd.redrawtabline()
+		-- The window may already be gone when this follows a wipeout.
+		pcall(vim.cmd, "redrawstatus!")
 	end)
 end
 
