@@ -20,6 +20,11 @@
       "src": "https://github.com/zbirenbaum/copilot.lua",
       "version": "'3b95c93d804077dd409d62a6da53a8c92ac8f415'"
     },
+    "csvview.nvim": {
+      "rev": "a4c45eadb03a462a80dd1a545d0f9cb636b73664",
+      "src": "https://github.com/hat0uma/csvview.nvim",
+      "version": "'a4c45eadb03a462a80dd1a545d0f9cb636b73664'"
+    },
     "gitsigns.nvim": {
       "rev": "6d808f99bd63303646794406e270bd553ad7792e",
       "src": "https://github.com/lewis6991/gitsigns.nvim",

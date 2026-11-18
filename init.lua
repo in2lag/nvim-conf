@@ -21,6 +21,7 @@ vim.pack.add({
 	{ src = "https://github.com/HiPhish/rainbow-delimiters.nvim", version = "a798325b7f36acc62741d1029930a7b96d4dd4bf" },
 	{ src = "https://github.com/nvim-mini/mini.nvim", version = "1345d191bb3da9c7b0e977f4387c5761f9bff68d" }, -- v0.18.0
 	{ src = "https://github.com/sphamba/smear-cursor.nvim", version = "9e9378d6ee34bb3782e0e8c63d9ec8ca618b479b" },
+	{ src = "https://github.com/hat0uma/csvview.nvim", version = "a4c45eadb03a462a80dd1a545d0f9cb636b73664" }, -- v1.3.0
 })
 
 if vim.loader then
@@ -52,6 +53,7 @@ require("ui.pairs")
 require("ui.indent")
 require("ui.smear")
 require("ui.markdown")
+require("ui.csv")
 require("ai.copilot")
 require("catppuccin").setup({ flavour = "frappe" })
 
