@@ -308,6 +308,17 @@ around a text object. Standard `mini.surround` `s`-prefix:
 | `sh{char}`              | Highlight the surrounding pair                                |
 | `sa` (in visual)        | Wrap current selection                                        |
 
+In **markdown** buffers, custom pair keys (same `sa` / `sd` / `sr` flow):
+
+| Key after `sa` / `sd` / `sr` | Wrapper   |
+| ---------------------------- | --------- |
+| `B`                          | `**bold**` |
+| `i`                          | `_italic_` |
+| `s`                          | `~~strike~~` |
+| `` ` ``                      | `` `code` `` (built-in) |
+
+Examples: `saiwB`, `saiwi`, visual select then `saB`. Italic uses underscore as requested.
+
 Note: typing `s` alone (vim's substitute-character) now has a short
 timeout-len delay while `mini.surround` waits to see if you're starting
 `sa`/`sd`/`sr`. If you use `s` heavily, lower `timeoutlen` or use `cl`
