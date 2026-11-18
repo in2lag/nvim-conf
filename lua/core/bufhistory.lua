@@ -31,6 +31,22 @@ local function is_file_buf(buf)
 end
 M.is_file_buf = is_file_buf
 
+-- The file is gone from disk but its buffer lives on under the old path:
+-- deleted or moved by something that does not rename the buffer with it (a
+-- shell `mv`, `git checkout`, lazygit, a session restoring a vanished path).
+-- Modified buffers are spared since they still hold work, and URI-named ones
+-- (fugitive://, oil://) never exist on disk in the first place.
+local function is_stale(buf)
+	if vim.bo[buf].modified then
+		return false
+	end
+	local name = vim.api.nvim_buf_get_name(buf)
+	if name:match("^%a[%w+.-]*://") then
+		return false
+	end
+	return vim.uv.fs_stat(name) == nil
+end
+
 -- ui.tabline draws this stack as a winbar. Most mutations happen inside
 -- autocmds that trigger a redraw anyway, but forget() from QuitPre/BufDelete
 -- does not always, so ask for one explicitly; scheduled so a burst of changes
@@ -89,6 +105,49 @@ local function forget(buf)
 	changed()
 end
 
+-- Wipe stale buffers; the BufWipeout hook below then forgets their entries.
+-- Candidates are listed buffers and history entries only, so a plugin's hidden
+-- scratch buffer with a made-up path is never touched. Anything shown in a
+-- window is kept: wiping it would close the window, and a `:e newfile` you have
+-- not written yet is stale by the definition above but should only go once you
+-- leave it.
+local function prune()
+	local shown = {}
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		shown[vim.api.nvim_win_get_buf(win)] = true
+	end
+	local candidates = vim.fn.getbufinfo({ buflisted = 1 })
+	for _, buf in ipairs(history) do
+		candidates[#candidates + 1] = { bufnr = buf }
+	end
+	local seen = {}
+	for _, info in ipairs(candidates) do
+		local buf = info.bufnr
+		if not seen[buf] and not shown[buf] and is_file_buf(buf) and is_stale(buf) then
+			pcall(vim.api.nvim_buf_delete, buf, {})
+		end
+		seen[buf] = true
+	end
+end
+-- Buffer pickers call this before listing: nothing else fires when a file goes
+-- away under a running Neovim (`:!rm`, a build step), so the scheduled passes
+-- below may not have run yet.
+M.prune = prune
+
+-- BufEnter fires in bursts (a session restore, a picker preview), and wiping
+-- buffers from inside that autocmd is asking for trouble; batch it instead.
+local prune_pending = false
+local function schedule_prune()
+	if prune_pending then
+		return
+	end
+	prune_pending = true
+	vim.schedule(function()
+		prune_pending = false
+		prune()
+	end)
+end
+
 -- The stack and the pointer, read-only by convention. ui.tabline renders it;
 -- the pointer is the entry the current window sits on.
 ---@return integer[] history, integer index
@@ -103,7 +162,7 @@ function M.jump_to(i)
 		vim.notify("Not in a main window", vim.log.levels.WARN, { title = "Buffer history" })
 		return false
 	end
-	if not is_file_buf(history[i]) then
+	if not is_file_buf(history[i]) or is_stale(history[i]) then
 		return false
 	end
 	-- Move the pointer first: record() reads it to recognise this switch as
@@ -161,7 +220,14 @@ function M.setup()
 		group = vim.api.nvim_create_augroup("buf-history", { clear = true }),
 		callback = function(args)
 			record(args.buf)
+			schedule_prune()
 		end,
+	})
+
+	-- Files deleted or moved while you were in another app.
+	vim.api.nvim_create_autocmd("FocusGained", {
+		group = "buf-history",
+		callback = schedule_prune,
 	})
 
 	-- Drop dead buffers rather than carrying holes, and keep the pointer aimed at

@@ -2,12 +2,14 @@ local map = vim.keymap.set
 
 -- [ The "Double Space" & Project Search ]
 map("n", "<leader><leader>", function()
+	require("core.bufhistory").prune()
 	Snacks.picker.smart()
 end, { desc = "Smart find files (frecency)" })
 map("n", "<leader>p", function()
 	Snacks.picker.grep()
 end, { desc = "Live grep project" })
 map("n", "<leader>fb", function()
+	require("core.bufhistory").prune()
 	Snacks.picker.buffers()
 end, { desc = "Find buffers" })
 map("n", "<leader>gs", function()

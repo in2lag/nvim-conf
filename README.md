@@ -275,6 +275,16 @@ history alone. The buffer itself stays listed either way (that is what `:q` does
 with `hidden` set), so it remains available in `<leader>fb`; use `:bd` if you
 want it gone from the buffer list too.
 
+Files that vanish from disk drop out as well. A shell `mv`, `git checkout`,
+lazygit or a session restore can leave a buffer alive under a path that no
+longer exists; on every `BufEnter` and `FocusGained` such buffers are wiped,
+which also takes them out of the history, `<leader>fb` and the next saved
+session (H/L also refuse to land on one in between). Only listed buffers and
+history entries are considered, so plugin scratch buffers are left alone.
+Modified buffers are kept, since they still hold work, as is anything shown in a
+window, so an unwritten `:e newfile` only goes once you leave it. Renames done in
+`nvim-tree` already rename the buffer, so those entries simply follow the file.
+
 The stack holds 100 entries. The tabline across the top draws it live (see
 [Tabline](#tabline)); `:BufHistory` prints the raw stack with `>` marking where
 you are, dead entries included, when the bar is not enough to explain a jump.
